@@ -144,17 +144,16 @@ pub fn run() {
                     apply_rounded(hwnd, 16);
                 }
 
-                // 窗口大小改变时重新裁剪（需保持 EventHandler 存活，否则会被 drop 取消监听）
+                // 窗口大小改变时重新裁剪
                 // HWND 不是 Send，无法被 move 闭包捕获，转为 isize 传递
                 let hwnd_isize = hwnd_ptr as isize;
-                let handler = window.on_window_event(move |event| {
+                window.on_window_event(move |event| {
                     if let tauri::WindowEvent::Resized(_) = event {
                         unsafe {
                             apply_rounded(HWND(hwnd_isize as *mut core::ffi::c_void), 16);
                         }
                     }
                 });
-                std::mem::forget(handler);
             }
 
             // 应用持久化日志级别（在所有初始化完成后执行）

@@ -1,0 +1,11 @@
+{
+  "identifier": "base-http",
+  "description": "HTTP permissions for bilibili domains",
+  "windows": ["main"],
+  "permissions": [
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://*.bilibili.com" }]
+    }
+  ]
+}

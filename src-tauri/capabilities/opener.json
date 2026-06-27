@@ -1,0 +1,15 @@
+{
+    "identifier": "opener",
+    "description": "opener pulgin",
+    "windows": ["main"],
+    "permissions": [
+        {
+            "identifier": "opener:allow-open-url",
+            "allow": [
+                {
+                    "url": "https//*.bilibili.com"
+                }
+            ]
+        }
+    ]
+}

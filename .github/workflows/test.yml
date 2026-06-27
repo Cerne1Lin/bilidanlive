@@ -45,4 +45,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: ${{ matrix.args }}
+          uploadArtifacts: true
           # 没有 tagName / releaseName，所以不会创建 Release

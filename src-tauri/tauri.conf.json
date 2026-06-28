@@ -23,7 +23,7 @@
         "transparent": true,
         "windowEffects": {
           "effects": ["hudWindow", "acrylic"],
-          "state": "active"
+          "radius": 16
         }
       }
     ],

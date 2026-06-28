@@ -1,4 +1,4 @@
-import { computed, inject } from "vue";
+import { computed } from "vue";
 import settings  from "./Setting";
 import { isTransparentBack } from "./WindowControl";
 
@@ -104,7 +104,6 @@ export const accentColor = computed(() => {
     return lightColor.value
 })
 
-const platform = inject<string>('platform')
 
 export const docBgColor = computed(() => {
     if (isTransparentBack.value || settings.glassmorphismBackground.value) {

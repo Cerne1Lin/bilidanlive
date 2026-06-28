@@ -88,37 +88,6 @@ pub fn run() {
                 wbi_sign::warmup_keys(&handle).await;
             });
 
-            // ========== Rounded corners (macOS) ==========
-            #[cfg(target_os = "macos")]
-            if let Some(window) = app.get_webview_window("main") {
-                use objc2::msg_send;
-                use objc2_app_kit::NSWindow;
-
-                let ns_window_ptr = window.ns_window().expect("Get ns_window error");
-                let ns_window: &NSWindow = unsafe { &*ns_window_ptr.cast() };
-                let content_view = ns_window
-                    .contentView()
-                    .expect("window should have contentView");
-
-                unsafe {
-                    // Make contentView layer-backed and clip to rounded bounds
-                    let content_ref = &*content_view;
-                    let _: () = msg_send![content_ref, setWantsLayer: true];
-                    let content_layer: *mut objc2::runtime::AnyObject =
-                        msg_send![content_ref, layer];
-                    let _: () = msg_send![content_layer, setCornerRadius: 16.0f64];
-                    let _: () = msg_send![content_layer, setMasksToBounds: true];
-
-                    // Also clip the WKWebView layer so web content respects corners
-                    let ns_view_ptr = window.ns_view().expect("Get ns_view error");
-                    let ns_view: *mut objc2::runtime::AnyObject = ns_view_ptr as *mut _;
-                    let _: () = msg_send![ns_view, setWantsLayer: true];
-                    let webview_layer: *mut objc2::runtime::AnyObject = msg_send![ns_view, layer];
-                    let _: () = msg_send![webview_layer, setCornerRadius: 16.0f64];
-                    let _: () = msg_send![webview_layer, setMasksToBounds: true];
-                }
-            }
-
             // 应用持久化日志级别（在所有初始化完成后执行）
             apply_saved_log_level(app.handle());
 

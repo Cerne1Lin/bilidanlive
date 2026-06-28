@@ -23,7 +23,7 @@ pub fn set_window_transparent(
         if transparent {
             // 纯透明模式：移除所有效果
             window
-                .set_effects::<EffectsBuilder>(None)
+                .set_effects(None)
                 .map_err(|e| format!("清除窗口效果失败: {}", e))?;
         } else {
             // 毛玻璃模式：使用 Windows Acrylic 效果
@@ -166,7 +166,11 @@ unsafe fn set_webview_draws_background_raw(view: *mut objc2::runtime::AnyObject,
 
 #[tauri::command]
 pub fn get_platform() -> &'static str {
-    if cfg!(target_os = "macos") { return "macos"; }
-    if cfg!(target_os = "windows") { return "windows"; }
+    if cfg!(target_os = "macos") {
+        return "macos";
+    }
+    if cfg!(target_os = "windows") {
+        return "windows";
+    }
     "others"
 }

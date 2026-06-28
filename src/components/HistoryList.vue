@@ -1,5 +1,5 @@
 <template>
-    <div class="history-container" :style="colors">
+    <div class="history-container" :style="colors" :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }">
         <div class="h-item" v-for="item in items" @click="emit('enterRoom', item.room_id)">
             <div class="cover">
                 <BiliImg :src="item.cover" :use-disk="true" />
@@ -19,6 +19,7 @@ import type { HistoryItem } from '../detail/HistoryList';
 import BiliImg from './BiliImg.vue';
 import { formatTime } from '../utility/format_time.ts';
 import { computed } from 'vue';
+import { platform } from '../detail/WindowControl';
 const props = withDefaults(defineProps<{
     items: HistoryItem[]
     accentColor?: string,
@@ -29,6 +30,8 @@ const props = withDefaults(defineProps<{
     hlColor: 'white',
     bgColor: 'transparent',
 })
+
+const isWindowsPlatform = computed(() => platform.value === 'windows')
 
 const colors = computed(() => ({
     '--hl-color': `${props.hlColor}`,
@@ -105,5 +108,19 @@ const emit = defineEmits<{
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
+}
+.windows-scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.windows-scrollbar-hidden::-webkit-scrollbar {
+    width: 6px;
+}
+.windows-scrollbar-hidden::-webkit-scrollbar-track {
+    background: transparent;
+}
+.windows-scrollbar-hidden::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
 }
 </style>

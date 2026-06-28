@@ -22,10 +22,10 @@
         "minHeight": 500,
         "transparent": true,
         "windowEffects": {
-          "effects": ["hudWindow", "mica" ,"acrylic"],
+          "effects": ["hudWindow", "acrylic"],
           "radius": 16,
           "state": "active",
-          "color": "#3232327f"
+          "color": "#32323234"
         },
         "scrollBarStyle": "fluentOverlay"
       }

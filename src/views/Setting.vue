@@ -1,5 +1,5 @@
 <template>
-    <div class="set-container" :style="cssVars">
+    <div class="set-container" :style="cssVars" :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }">
         <div class="items-container">
             <div class="title">
                 <SvgIcon :svg-raw="svg.playSvg" :size="'1.2em'"/>
@@ -51,7 +51,7 @@
             />
             <div class="color-theme">
                 <div class="sub-title">配色</div>
-                <div class="color-list">
+                <div class="color-list" :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }">
                     <div class="color-item" v-for="item in THEMES">
                         <div class="preview" 
                             :style="{backgroundColor: item.light, borderColor: item.medium}"
@@ -106,6 +106,7 @@ import settings from '../detail/Setting.ts'
 import SvgIcon from '../components/SvgIcon.vue';
 import { svg } from '../detail/Assets.ts';
 import { logSize, getLogSize, cleanLog } from '../utility/logger.ts';
+import { platform } from '../detail/WindowControl';
 
 const cssVars = computed(() => ({
     '--hl-color': hlColor.value,
@@ -113,6 +114,8 @@ const cssVars = computed(() => ({
     '--bg-color': bgLightColor.value,
     '--radius': radius.value,
 }))
+
+const isWindowsPlatform = computed(() => platform.value === 'windows')
 
 const logSizeStr = computed(() => {
     if (logSize.value >= 1024 && logSize.value <= 1024 * 1024) {
@@ -179,10 +182,20 @@ function setColorTheme(item: ThemeColors) {
     display: flex;
     overflow-x: auto;
     gap: 16px;
+}
+.windows-scrollbar-hidden {
+    -ms-overflow-style: none;
     scrollbar-width: none;
 }
-.color-list::-webkit-scrollbar {
-    display: none;
+.windows-scrollbar-hidden::-webkit-scrollbar {
+    width: 6px;
+}
+.windows-scrollbar-hidden::-webkit-scrollbar-track {
+    background: transparent;
+}
+.windows-scrollbar-hidden::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
 }
 .preview {
     height: 48px;

@@ -43,7 +43,7 @@
                 </div>
             </div>
             <div class="switch-container">
-                <div class="live-full" v-loading="isLoading.fLoading" :class="{ 'page-hide': selectIndex !== 0 }">
+                <div class="live-full" v-loading="isLoading.fLoading" :class="{ 'page-hide': selectIndex !== 0, 'windows-scrollbar-hidden': isWindowsPlatform }">
                     <div class="live-full-item" v-for="item in followingLive.list">
                         <div class="face-name">
                             <div class="face" title="在浏览器中打开" @click="openBiliLiveRoom(item.room_id)"><BiliImg :src="item.face" :default="img.defaultFace" :use-disk="true"/></div>
@@ -79,6 +79,7 @@ import { img } from '../detail/Assets'
 import HistoryList from './HistoryList.vue'
 import { HistoryItem } from '../detail/HistoryList.ts'
 import { radius } from '../detail/Theme.ts'
+import { platform } from '../detail/WindowControl'
 
 const props = withDefaults(defineProps<{
     userInfo: NavUserInfo,
@@ -97,6 +98,8 @@ const props = withDefaults(defineProps<{
     bgColor: 'transparent',
     hlColor: 'white',
 })
+const isWindowsPlatform = computed(() => platform.value === 'windows')
+
 const cssVars = computed(() => ({
     '--hl-color': `${props.hlColor}`,
     '--accent-color': `${props.accentColor}`,
@@ -442,6 +445,20 @@ function formatOnline(n: number): string {
     border-radius: 0 0 16px 16px;
     box-sizing: border-box;
     transition: transform 0.4s ease-out, opacity 0.3s ease-out;
+}
+.windows-scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.windows-scrollbar-hidden::-webkit-scrollbar {
+    width: 6px;
+}
+.windows-scrollbar-hidden::-webkit-scrollbar-track {
+    background: transparent;
+}
+.windows-scrollbar-hidden::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
 }
 .personal-container {
     display: flex;

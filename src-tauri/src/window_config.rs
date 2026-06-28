@@ -21,7 +21,7 @@ pub fn set_window_transparent(
         let color = if transparent {
             None
         } else {
-            Some(tauri::window::Color(0, 0, 0, 255))
+            Some(tauri::window::Color(0, 0, 0, 0))
         };
         window
             .set_background_color(color)
@@ -141,4 +141,11 @@ unsafe fn set_webview_draws_background_raw(view: *mut objc2::runtime::AnyObject,
         let subview: *mut objc2::runtime::AnyObject = msg_send![subviews, objectAtIndex: i];
         set_webview_draws_background_raw(subview, draws);
     }
+}
+
+#[tauri::command]
+pub fn get_platform() -> &'static str {
+    if cfg!(target_os = "macos") { return "macos"; }
+    if cfg!(target_os = "windows") { return "windows"; }
+    "others"
 }

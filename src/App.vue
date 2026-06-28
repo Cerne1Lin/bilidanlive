@@ -5,14 +5,25 @@ import TitleBar from './components/TitleBar.vue';
 import { svg } from './detail/Assets'
 import Tip from './components/Tip.vue'
 import { tipList } from './utility/tip.ts';
-import { hlColor, accentColor, bgLightColor } from './detail/Theme.ts';
+import { hlColor, accentColor, bgLightColor, docBgColor, enableGlobalBlur } from './detail/Theme.ts';
 
 const router = useRouter()
 
 // html/body 是 Vue 根元素祖先，v-bind() in CSS 无法向上传递，改用 JS 同步
 watchEffect(() => {
-    document.body.style.backgroundColor = bgLightColor.value
+  document.body.style.backgroundColor = docBgColor.value
 })
+watchEffect(() => {
+  const root = document.documentElement
+  if (enableGlobalBlur.value) {
+    root.style.setProperty('backdrop-filter', 'blur(10px)')
+    root.style.setProperty('-webkit-backdrop-filter', 'blur(10px)')
+  } else {
+    root.style.removeProperty('backdrop-filter')
+    root.style.removeProperty('-webkit-backdrop-filter')
+  }
+})
+
 const transitionName = ref('slide-right')
 
 router.beforeEach((to, from) => {
@@ -66,6 +77,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  border-radius: 16px;
 }
 .tip-container {
   position: absolute;

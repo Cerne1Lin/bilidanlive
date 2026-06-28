@@ -1,5 +1,6 @@
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import settings  from "./Setting";
+import { isTransparentBack } from "./WindowControl";
 
 export interface ThemeColors {
     label: string;
@@ -89,12 +90,12 @@ export const hlColor = computed(() => {
     else return 'black'
 })
 export const bgLightColor = computed(() => {
-    if (settings.glassmorphismBackground.value) return 'transparent'
+    if (settings.glassmorphismBackground.value || isTransparentBack.value) return 'transparent'
     if (settings.darktheme.value) return '#252525'
     else return lightestColor.value
 })
 export const bgDarkColor = computed(() => {
-    if (settings.glassmorphismBackground.value) return 'transparent'
+    if (settings.glassmorphismBackground.value || isTransparentBack.value) return 'transparent'
     if (settings.darktheme.value) return 'black'
     else return darkestColor.value
 
@@ -102,9 +103,26 @@ export const bgDarkColor = computed(() => {
 export const accentColor = computed(() => {
     return lightColor.value
 })
-export const docBgColor = computed(() => {
-    if (settings.glassmorphismBackground.value) return 'transparent'
-    else if (settings.darktheme.value) return 'black'
-    else return accentColor.value
+
+const platform = inject<string>('platform')
+export const enableGlobalBlur = computed(() => {
+    if (settings.glassmorphismBackground.value && !isTransparentBack.value && platform === 'windows')
+        return true
+    else return false
 })
 
+export const docBgColor = computed(() => {
+    if (settings.glassmorphismBackground.value && !isTransparentBack.value && platform === 'windows') {
+        if (settings.darktheme.value) {
+            return 'rgba(74, 74, 74, 0.5)'
+        } else {
+            return 'rgba(193, 193, 193, 0.5)'
+        }
+    } else if (isTransparentBack.value) {
+        return 'transparent'
+    } else if (settings.glassmorphismBackground.value && !isTransparentBack.value) {
+        return 'transparent'
+    } else {
+        return bgLightColor.value
+    }
+})

@@ -113,7 +113,7 @@ function isActive(path: string): boolean {
     border-bottom: none;
     border-radius: 16px 16px 0 0;
     overflow: hidden;
-    background-color: color-mix(in srgb, v-bind("props.bgColor") 90%, grey);
+    background-color: v-bind("props.bgColor");
 }
 .nav {
     display: flex;

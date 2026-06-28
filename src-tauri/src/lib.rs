@@ -119,43 +119,6 @@ pub fn run() {
                 }
             }
 
-            // ========== Rounded corners (Windows) ==========
-            #[cfg(target_os = "windows")]
-            if let Some(window) = app.get_webview_window("main") {
-                use windows::Win32::Foundation::HWND;
-                use windows::Win32::Graphics::Gdi::{CreateRoundRectRgn, SetWindowRgn};
-                use windows::Win32::UI::WindowsAndMessaging::GetClientRect;
-
-                let hwnd = window.hwnd().expect("Get hwnd error");
-                let hwnd_ptr = hwnd.0; // *mut c_void
-
-                unsafe fn apply_rounded(hwnd: HWND, radius: i32) {
-                    let mut rect = std::mem::zeroed();
-                    let _ = GetClientRect(hwnd, &mut rect);
-                    let w = rect.right - rect.left;
-                    let h = rect.bottom - rect.top;
-                    if w > 0 && h > 0 {
-                        let rgn = CreateRoundRectRgn(0, 0, w, h, radius, radius);
-                        let _ = SetWindowRgn(hwnd, Some(rgn), true);
-                    }
-                }
-
-                unsafe {
-                    apply_rounded(hwnd, 16);
-                }
-
-                // 窗口大小改变时重新裁剪
-                // HWND 不是 Send，无法被 move 闭包捕获，转为 isize 传递
-                let hwnd_isize = hwnd_ptr as isize;
-                window.on_window_event(move |event| {
-                    if let tauri::WindowEvent::Resized(_) = event {
-                        unsafe {
-                            apply_rounded(HWND(hwnd_isize as *mut core::ffi::c_void), 16);
-                        }
-                    }
-                });
-            }
-
             // 应用持久化日志级别（在所有初始化完成后执行）
             apply_saved_log_level(app.handle());
 
@@ -181,6 +144,7 @@ pub fn run() {
             web_client::get_history_list,
             web_client::record_room_entry,
             window_config::set_window_transparent,
+            window_config::get_platform,
             live_ws::connect_live_room,
             live_ws::disconnect_live_room,
             live_audio::prepare_audio_stream,

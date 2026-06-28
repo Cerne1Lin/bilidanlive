@@ -92,7 +92,7 @@
                 await cleanLog()
                 await getLogSize()
             }"/>
-            <SetItem :title="'关于'" :type="'none'" :icon="svg.aboutSvg"/>
+            <SetItem :title="'关于'" :type="'none'" :icon="svg.aboutSvg" :accent-color="accentColor"/>
         </div>
     </div>
 </template>

@@ -18,7 +18,8 @@ jobs:
             args: '--target x86_64-apple-darwin'
             target_dir: 'x86_64-apple-darwin'
           - platform: 'windows-latest'
-            args: 'release'
+            args: ''
+            target_dir: 'release'
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4

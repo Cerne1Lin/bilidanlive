@@ -65,6 +65,7 @@ watch(
 )
 
 async function linkAll(id: number): Promise<boolean> {
+    roomId = id
     return linkToRoom(id)
 }
 

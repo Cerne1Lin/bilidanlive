@@ -92,11 +92,9 @@ export function useLiveControl() {
             // 进入房间时从设置同步 audioOnly 状态
             audioOnly.value = settings.audioOnly.value
 
-            // 准备音频流（传递 Channel 给 Rust，立即返回）
-            await LiveAudio.prepareStream(roomId)
-
-            // 根据 autoPlay 决定是否激活播放
-            if (settings.autoPlay.value) {
+            if (roomInfo.value?.live_status === 1 && settings.autoPlay.value) {
+                // 准备音频流（传递 Channel 给 Rust，立即返回）
+                await LiveAudio.prepareStream(roomId)
                 // 激活音频拉流
                 await LiveAudio.setAudioActive(true)
                 // 视频：非纯音频模式时启动
@@ -138,11 +136,12 @@ export function useLiveControl() {
                     if (infoRes.data) roomInfo.value = infoRes.data
                 })(),
             ])
-
-            // 准备流并激活播放
-            await LiveAudio.prepareStream(roomId)
-            await LiveAudio.setAudioActive(true)
-            if (!audioOnly.value) LiveAudio.startVideo()
+            if (settings.autoPlay && roomInfo.value?.live_status === 1) {
+                // 准备流并激活播放
+                await LiveAudio.prepareStream(roomId)
+                await LiveAudio.setAudioActive(true)
+                if (!audioOnly.value) LiveAudio.startVideo()
+            }
             addTip('刷新成功', 'success', 2)
         } catch (e) {
             addTip(`刷新失败: ${e}`, 'error', 3)

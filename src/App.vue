@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import TitleBar from './components/TitleBar.vue';
 import { svg } from './detail/Assets'
 import Tip from './components/Tip.vue'
 import { tipList } from './utility/tip.ts';
-import { hlColor, accentColor, bgLightColor, docBgColor, } from './detail/Theme.ts';
+import { hlColor, accentColor, bgLightColor, docBgColor, darkTheme, } from './detail/Theme.ts';
+import { setEffects } from './detail/WindowControl.ts';
 
 const router = useRouter()
 
@@ -20,6 +21,10 @@ router.beforeEach((to, from) => {
   const toIdx = (to.meta.index as number) ?? 0
   const fromIdx = (from.meta.index as number) ?? 0
   transitionName.value = toIdx > fromIdx ? 'slide-left' : 'slide-right'
+})
+
+onMounted(() => {
+  setEffects(darkTheme)
 })
 
 const navItems = ref([

@@ -3,19 +3,28 @@
         <div class="main-box" :class="{ 'collapsed': Immersive.isImmersive.value }">
             <div class="live-snapshot" 
                 v-show="isConnected"
-                :style="{width: isFullscreen?'90%':''}"
+                :style="{width: (isFullscreen && isVideoPlaying)?'90%':''}"
             >
-                <BiliImg v-show="!isVideoPlaying" :src="roomInfo?.keyframe"/>
+                <BiliImg
+                    v-show="!isVideoPlaying && Boolean(roomInfo?.keyframe || roomInfo?.user_cover)"
+                    :src="roomInfo?.keyframe || roomInfo?.user_cover || ''"
+                    :use-disk="true"
+                />
                 <canvas ref="videoCanvasRef" v-show="isVideoPlaying"></canvas>
                 <div class="shadow-mask"></div>
-                <span class="pro" @click="emit('togglePlay')"><SvgIcon :svg-raw="isPlaying?svg.pauseSvg:svg.playSvg" /></span>
+                <span class="pro" 
+                    @click="emit('togglePlay')"
+                    v-if="roomInfo?.live_status === 1"
+                >
+                    <SvgIcon :svg-raw="isPlaying?svg.pauseSvg:svg.playSvg" />
+                </span>
                 <div class="fullscreen" 
                     @click="isFullscreen = !isFullscreen"
                     v-show="isVideoPlaying"
                 >
                     <SvgIcon :svg-raw="isFullscreen?svg.fullscreenExitSvg:svg.fullscreenSvg"/></div>
             </div>
-            <div class="info" v-show="!isFullscreen">
+            <div class="info" v-show="!isFullscreen || roomInfo?.live_status === 0">
                 <div class="title" @dblclick="startEdit" :class="{'text':isConnected && !isEditing}">
                     <span v-if="isConnected && !isEditing">{{ props.roomInfo?.title || '未命名直播间' }}</span>
                     <input

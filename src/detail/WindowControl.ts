@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { ref } from "vue";
+import { ref, Ref, watchEffect } from "vue";
 import { error as logError, debug as logDebug } from "../utility/logger";
 import { Window, Effects, Effect, EffectState } from "@tauri-apps/api/window";
 import { darkTheme } from "./Theme";
@@ -16,9 +16,12 @@ function makeEffects(dark: boolean | null): Effects {
     } as Effects;
 }
 
-export function setEffects(dark: boolean) {
+export function setEffects(dark: Ref<boolean>) {
     if (platform.value !== 'windows') return
-    appWindow.setEffects(makeEffects(dark)).catch((err) => logError(`[Window] 设置effects失败 ${err}`))
+    watchEffect(() => {
+        if (!isTransparentBack.value)
+            appWindow.setEffects(makeEffects(dark.value)).catch((err) => logError(`[Window] 设置effects失败 ${err}`))
+    })
 }
 
 export async function setWindowTransparent(is: boolean) {

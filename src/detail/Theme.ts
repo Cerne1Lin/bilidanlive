@@ -105,22 +105,9 @@ export const accentColor = computed(() => {
 })
 
 const platform = inject<string>('platform')
-export const enableGlobalBlur = computed(() => {
-    if (settings.glassmorphismBackground.value && !isTransparentBack.value && platform === 'windows')
-        return true
-    else return false
-})
 
 export const docBgColor = computed(() => {
-    if (settings.glassmorphismBackground.value && !isTransparentBack.value && platform === 'windows') {
-        if (settings.darktheme.value) {
-            return 'rgba(74, 74, 74, 0.5)'
-        } else {
-            return 'rgba(193, 193, 193, 0.5)'
-        }
-    } else if (isTransparentBack.value) {
-        return 'transparent'
-    } else if (settings.glassmorphismBackground.value && !isTransparentBack.value) {
+    if (isTransparentBack.value || settings.glassmorphismBackground.value) {
         return 'transparent'
     } else {
         return bgLightColor.value

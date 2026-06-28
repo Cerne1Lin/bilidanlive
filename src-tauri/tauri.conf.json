@@ -22,7 +22,7 @@
         "minHeight": 500,
         "transparent": true,
         "windowEffects": {
-          "effects": ["hudWindow"],
+          "effects": ["hudWindow", "acrylic"],
           "state": "active"
         }
       }

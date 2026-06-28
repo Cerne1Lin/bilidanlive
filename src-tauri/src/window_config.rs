@@ -16,7 +16,28 @@ pub fn set_window_transparent(
         set_window_transparent_macos(&window, transparent)?;
     }
 
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(target_os = "windows")]
+    {
+        use tauri::window::{Effect, EffectsBuilder};
+
+        if transparent {
+            // 纯透明模式：移除所有效果
+            window
+                .set_effects::<EffectsBuilder>(None)
+                .map_err(|e| format!("清除窗口效果失败: {}", e))?;
+        } else {
+            // 毛玻璃模式：使用 Windows Acrylic 效果
+            let effects = EffectsBuilder::new()
+                .effect(Effect::Acrylic)
+                .color(tauri::window::Color(0, 0, 0, 0))
+                .build();
+            window
+                .set_effects(effects)
+                .map_err(|e| format!("设置窗口效果失败: {}", e))?;
+        }
+    }
+
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
     {
         let color = if transparent {
             None

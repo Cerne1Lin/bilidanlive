@@ -122,43 +122,22 @@ pub fn run() {
             // ========== Rounded corners (Windows) ==========
             #[cfg(target_os = "windows")]
             if let Some(window) = app.get_webview_window("main") {
-                use windows::Win32::Foundation::{HWND, POINT};
+                use windows::Win32::Foundation::HWND;
                 use windows::Win32::Graphics::Gdi::{CreateRoundRectRgn, SetWindowRgn};
-                use windows::Win32::UI::WindowsAndMessaging::{
-                    ClientToScreen, GetClientRect, GetWindowRect,
-                };
+                use windows::Win32::UI::WindowsAndMessaging::GetClientRect;
 
                 let hwnd = window.hwnd().expect("Get hwnd error");
                 let hwnd_ptr = hwnd.0; // *mut c_void
 
                 unsafe fn apply_rounded(hwnd: HWND, radius: i32) {
-                    let mut client_rect = std::mem::zeroed();
-                    let _ = GetClientRect(hwnd, &mut client_rect);
-                    let w = client_rect.right - client_rect.left;
-                    let h = client_rect.bottom - client_rect.top;
-                    if w <= 0 || h <= 0 {
-                        return;
+                    let mut rect = std::mem::zeroed();
+                    let _ = GetClientRect(hwnd, &mut rect);
+                    let w = rect.right - rect.left;
+                    let h = rect.bottom - rect.top;
+                    if w > 0 && h > 0 {
+                        let rgn = CreateRoundRectRgn(0, 0, w, h, radius, radius);
+                        let _ = SetWindowRgn(hwnd, Some(rgn), true);
                     }
-
-                    // 将客户区 (0,0) 映射到窗口坐标系
-                    // SetWindowRgn 使用窗口坐标，而 GetClientRect 返回客户区坐标
-                    // frameless 窗口有不可见的 resize 边框，两者原点不同
-                    let mut pt = POINT { x: 0, y: 0 };
-                    let _ = ClientToScreen(hwnd, &mut pt);
-                    let mut window_rect = std::mem::zeroed();
-                    let _ = GetWindowRect(hwnd, &mut window_rect);
-                    let offset_x = pt.x - window_rect.left;
-                    let offset_y = pt.y - window_rect.top;
-
-                    let rgn = CreateRoundRectRgn(
-                        offset_x,
-                        offset_y,
-                        offset_x + w,
-                        offset_y + h,
-                        radius,
-                        radius,
-                    );
-                    let _ = SetWindowRgn(hwnd, Some(rgn), true);
                 }
 
                 unsafe {

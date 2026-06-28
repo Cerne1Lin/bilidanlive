@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "bilidanback",
+  "productName": "bilidanlive",
   "version": "0.1.0",
-  "identifier": "bilidanback",
+  "identifier": "bilidanlive",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -23,8 +23,11 @@
         "transparent": true,
         "windowEffects": {
           "effects": ["hudWindow", "mica" ,"acrylic"],
-          "radius": 16
-        }
+          "radius": 16,
+          "state": "active",
+          "color": "#3232327f"
+        },
+        "scrollBarStyle": "fluentOverlay"
       }
     ],
     "security": {

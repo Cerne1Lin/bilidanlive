@@ -1,19 +1,19 @@
 import type { Directive } from 'vue'
 import { computed } from 'vue'
-import Setting from '../detail/Setting'
+import { darkTheme, glassmorphismBackground } from '../detail/Theme'
 
 const MASK_CLASS = 'v-loading-mask'
 const SPINNER_CLASS = 'v-loading-spinner'
 let styleInjected = false
 const spinnerColor = computed(() => {
-    if (Setting.darktheme.value || Setting.glassmorphismBackground.value) {
+    if (darkTheme.value || glassmorphismBackground.value) {
         return 'white'
     } else {
         return 'black'
     }
 })
 const maskColor = computed(() => {
-    if (Setting.darktheme.value || Setting.glassmorphismBackground.value) {
+    if (darkTheme.value || glassmorphismBackground.value) {
         return '#46464688'
     } else {
         return '#aeaeae8e'

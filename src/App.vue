@@ -69,6 +69,8 @@ html, body {
   overflow: hidden;
   border-radius: 16px;
 }
+</style>
+<style scoped>
 .tip-container {
   position: absolute;
   top: 0;

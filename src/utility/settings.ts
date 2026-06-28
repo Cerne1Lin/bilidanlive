@@ -6,7 +6,7 @@ export interface AppSettings {
   font_size: number;
   auto_play: boolean;
   audio_only: boolean;
-  dark_theme: boolean;
+  theme: string;
   volume: number;
   auto_link_wss: boolean;
   color: string;

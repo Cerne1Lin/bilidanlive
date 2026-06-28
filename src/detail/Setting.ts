@@ -2,6 +2,7 @@ import { ref, Ref, watch } from "vue";
 import { getSettings, setSetting } from "../utility/settings";
 import type { AppSettings } from "../utility/settings";
 import { error as logError, info as logInfo } from "../utility/logger";
+import { useSystemTheme } from "./Theme";
 
 // ── 设置项类型定义 ─────────────────────────────────
 export interface SetItemRequire {
@@ -9,7 +10,7 @@ export interface SetItemRequire {
     title: string;
     desc?: string;
     icon?: string;
-    type: 'switch' | 'seg-slider' | 'slider';
+    type: 'switch' | 'seg-slider' | 'slider' | 'none' | 'text-btn' | 'checkbox-btn';
     segments?: {
         label: string;
         value: number | string;
@@ -26,7 +27,7 @@ const glassmorphismBackground = ref<boolean>(true);
 const fontSize = ref<number>(16);
 const autoPlay = ref<boolean>(true);
 const audioOnly = ref<boolean>(false);
-const darktheme = ref<boolean>(true);
+const theme = ref<string>('');
 const volume = ref<number>(50);
 const autoLinkWss = ref<boolean>(true);
 const color = ref<string>("pink");
@@ -79,11 +80,16 @@ export const themeSettingItems: SetItemRequire[] = [
         ],
     },
     {
-        key: "dark_theme",
-        title: "启用暗色模式",
-        desc: "关闭时建议关闭毛玻璃",
-        type: "switch",
-        toggleValue: darktheme
+        key: "theme",
+        title: "主题",
+        desc: "system:跟随系统",
+        type: "checkbox-btn",
+        sliderValue: theme,
+        segments: [
+            { label: 'System', value: 'system' },
+            { label: 'Light', value: 'light' },
+            { label: 'Dark', value: 'dark' },
+        ]
     },
 ];
 
@@ -117,6 +123,16 @@ const pendingUpdates = new Map<keyof AppSettings, ReturnType<typeof setTimeout>>
 export function setupAutoSave(): void {
     for (const [_, v] of settingItems) {
         for (const item of v) {
+            if (item.key === 'theme' && item.sliderValue) {
+                watch(item.sliderValue, (val) => {
+                    if (val === 'system') {
+                        useSystemTheme().start()
+                    } else {
+                        useSystemTheme().stop()
+                    }
+                })
+                continue
+            }
             const target = item.toggleValue ?? item.sliderValue;
             if (!target) continue;
             watch(target, (val) => {
@@ -162,6 +178,9 @@ export async function initSettings(): Promise<void> {
         const s = await getSettings();
         volume.value = s.volume
         color.value = s.color
+        if (s.theme === 'system') {
+            useSystemTheme().start()
+        }
         for (const [_, v] of settingItems) {
             for (const item of v) {
                 const val = s[item.key];
@@ -211,7 +230,7 @@ export default {
     fontSize,
     autoPlay,
     audioOnly,
-    darktheme,
+    theme,
     volume,
     autoLinkWss,
     color,

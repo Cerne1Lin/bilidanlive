@@ -2,6 +2,34 @@ import { computed, ref } from "vue";
 import settings  from "./Setting";
 import { isTransparentBack } from "./WindowControl";
 
+let mediaQuery: MediaQueryList | null = null
+const isDark = ref(false)
+
+const update = (e: MediaQueryListEvent) => {
+    isDark.value = e.matches
+}
+
+const start = () => {
+    if (!window.matchMedia) return
+    mediaQuery = window.matchMedia('(prefers-color-scheme: dark)') 
+    isDark.value = mediaQuery.matches
+    mediaQuery.addEventListener('change', update)
+} 
+
+const stop = () => {
+    if (mediaQuery) {
+        mediaQuery.removeEventListener('change', update)
+    }
+}
+
+export function useSystemTheme() {
+    return {
+        isDark,
+        start,
+        stop,
+    }
+} 
+
 export interface ThemeColors {
     label: string;
     name: string;
@@ -78,25 +106,30 @@ export const currentTheme = computed<ThemeColors>(() => {
     return THEMES[settings.color.value] ?? DEFAULT_THEME;
 });
 
+export const glassmorphismBackground = ref(settings.glassmorphismBackground.value)
 // ── 便捷 computed ───────────────────────────────────────
-
+export const darkTheme = computed(() => {
+    if (settings.theme.value === 'dark') return true 
+    if (settings.theme.value === 'system') return isDark.value 
+    return false
+})
 export const lightColor = computed(() => currentTheme.value.light);
 export const lightestColor = computed(() => currentTheme.value.lightest);
 export const mediumColor = computed(() => currentTheme.value.medium);
 export const darkColor = computed(() => currentTheme.value.dark)
 export const darkestColor = computed(() => currentTheme.value.darkest)
 export const hlColor = computed(() => {
-    if (settings.darktheme.value) return 'white'
+    if (darkTheme.value) return 'white'
     else return 'black'
 })
 export const bgLightColor = computed(() => {
     if (settings.glassmorphismBackground.value || isTransparentBack.value) return 'transparent'
-    if (settings.darktheme.value) return '#252525'
+    if (darkTheme.value) return '#252525'
     else return lightestColor.value
 })
 export const bgDarkColor = computed(() => {
     if (settings.glassmorphismBackground.value || isTransparentBack.value) return 'transparent'
-    if (settings.darktheme.value) return 'black'
+    if (darkTheme.value) return 'black'
     else return darkestColor.value
 
 })

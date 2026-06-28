@@ -6,6 +6,7 @@ import { setupAutoSave, initSettings } from "./detail/Setting";
 import { error as logError } from "./utility/logger";
 import { invoke } from "@tauri-apps/api/core";
 import { radius } from "./detail/Theme.ts";
+import { platform as wPlatform } from "./detail/WindowControl.ts";
 
 async function main() {
     // 注册 ref 变化 → Rust 自动持久化
@@ -16,6 +17,7 @@ async function main() {
     if (platform === 'macos') {
         radius.value = '16px'
     }
+    wPlatform.value = platform
     const app = createApp(App);
     app.config.errorHandler = (err) => {
         logError(`[Vue] 全局错误: ${String(err)}`);

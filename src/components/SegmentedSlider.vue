@@ -72,7 +72,7 @@ const props = withDefaults(defineProps<{
   thumbSize: 12,
 })
 
-const modelValue = defineModel<string | number>({ required: true })
+const modelValue = defineModel<string | number>()
 
 const trackRef = ref<HTMLElement | null>(null)
 const isDragging = ref(false)

@@ -50,7 +50,7 @@
                 :hl-color="hlColor"
             />
             <div class="color-theme">
-                <div class="sub-title">主题</div>
+                <div class="sub-title">配色</div>
                 <div class="color-list">
                     <div class="color-item" v-for="item in THEMES">
                         <div class="preview" 

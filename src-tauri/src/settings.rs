@@ -25,8 +25,8 @@ pub struct AppSettings {
     #[serde(default = "default_audio_only")]
     pub audio_only: bool,
     /// 主题：light / dark
-    #[serde(default = "default_darktheme")]
-    pub dark_theme: bool,
+    #[serde(default = "default_theme")]
+    pub theme: String,
     #[serde(default = "default_volume")]
     pub volume: u32,
     #[serde(default = "default_auto_link_wss")]
@@ -62,8 +62,8 @@ fn default_auto_play() -> bool {
 fn default_audio_only() -> bool {
     false
 }
-fn default_darktheme() -> bool {
-    true
+fn default_theme() -> String {
+    "system".to_string()
 }
 
 impl Default for AppSettings {
@@ -74,7 +74,7 @@ impl Default for AppSettings {
             always_on_top: false,
             auto_play: default_auto_play(),
             audio_only: default_audio_only(),
-            dark_theme: default_darktheme(),
+            theme: default_theme(),
             volume: default_volume(),
             auto_link_wss: default_auto_link_wss(),
             color: default_color(),
@@ -110,6 +110,7 @@ const VOLUME_MIN: u32 = 0;
 const VOLUME_MAX: u32 = 100;
 const VALID_COLORS: &[&str] = &["pink", "blue", "purple", "green", "yellow", "red"];
 const VALID_LOG_LEVELS: &[&str] = &["trace", "debug", "info", "warn", "error"];
+const VALID_THEMES: &[&str] = &["system", "dark", "light"];
 
 /// 校验并修正越界值，返回被重置的字段名列表
 fn validate(settings: &mut AppSettings) -> Vec<&'static str> {
@@ -131,8 +132,10 @@ fn validate(settings: &mut AppSettings) -> Vec<&'static str> {
         settings.log_level = default_log_level();
         reset.push("log_level");
     }
-
-    if !reset.is_empty() {
+    if !VALID_THEMES.contains(&settings.theme.as_str()) {
+        settings.theme = default_theme();
+        reset.push("theme");
+    }    if !reset.is_empty() {
         log::warn!("[settings] 越界值已重置为默认: {:?}", reset);
     }
     reset
@@ -154,7 +157,7 @@ pub(crate) fn load_settings(app_handle: &AppHandle) -> Result<AppSettings, Strin
     log::debug!(
         "[settings] 已加载设置: font_size={}, dark_theme={}, log_level={}, color={}",
         settings.font_size,
-        settings.dark_theme,
+        settings.theme,
         settings.log_level,
         settings.color
     );
@@ -213,7 +216,7 @@ pub fn set_setting(
                 .map_err(|e| format!("值类型错误: {}", e))?;
         }
         "dark_theme" => {
-            settings.dark_theme = serde_json::from_value(value)
+            settings.theme = serde_json::from_value(value)
                 .map_err(|e| format!("值类型错误: {}", e))?;
         }
         "volume" => {

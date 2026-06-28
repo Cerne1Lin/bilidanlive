@@ -21,27 +21,33 @@
             @click="emit('btnClick')"
         >{{ btnText }}</div>
     </div>
-    <div class="slider-wrap" v-if="type === 'seg-slider' || type === 'slider'">
-      <SegmentedSlider
-        v-if="type === 'seg-slider'"
-        v-model="sliderValue"
-        :segments="segments"
-        :track-height="6"
-        track-color="grey"
-        :fill-color="accentColor"
-      />
-      <input
-        v-if="type === 'slider'"
-        class="slider"
-        type="range"
-        :min="sliderMin"
-        :max="sliderMax"
-        :disabled="isDisable"
-        :value="sliderValue"
-        :style="{ background: `linear-gradient(to right, var(--main-color) 0%, var(--main-color) ${fillPercent}%, grey ${fillPercent}%, grey 100%)` }"
-        @input="onSliderInput"
-      >
-      <div class="slider-value" v-if="type === 'slider'">{{ sliderValue }}</div>
+    <div class="wrap" v-if="type === 'seg-slider' || type === 'slider' || type === 'checkbox-btn'">
+        <CheckboxBtn 
+            v-if="type === 'checkbox-btn'"
+            :data="segments"
+            v-model="sliderValue"
+            :accent-color="accentColor"
+        />
+        <SegmentedSlider
+            v-if="type === 'seg-slider'"
+            v-model="sliderValue"
+            :segments="segments"
+            :track-height="6"
+            track-color="grey"
+            :fill-color="accentColor"
+        />
+        <input
+            v-if="type === 'slider'"
+            class="slider"
+            type="range"
+            :min="sliderMin"
+            :max="sliderMax"
+            :disabled="isDisable"
+            :value="sliderValue"
+            :style="{ background: `linear-gradient(to right, var(--main-color) 0%, var(--main-color) ${fillPercent}%, grey ${fillPercent}%, grey 100%)` }"
+            @input="onSliderInput"
+        />
+        <div class="slider-value" v-if="type === 'slider'">{{ sliderValue }}</div>
     </div>
   </div>
 </template>
@@ -51,10 +57,11 @@ import { computed } from 'vue'
 import SegmentedSlider, { Segment } from './SegmentedSlider.vue'
 import ToggleSwitch from './ToggleSwitch.vue'
 import SvgIcon from './SvgIcon.vue';
+import CheckboxBtn from './CheckboxBtn.vue';
 
 const props = withDefaults(defineProps<{
     icon?: string,
-    type: 'switch'|'seg-slider'|'slider' | 'none' | 'text-btn',
+    type: 'switch'|'seg-slider'|'slider' | 'none' | 'text-btn' | 'checkbox-btn',
     title?: string,
     hlColor?: string,
     accentColor?: string,
@@ -145,7 +152,7 @@ const colors = computed(() => ({
     margin-left: auto;
 }
 
-.slider-wrap {
+.wrap {
     padding: 0 1em;
     box-sizing: border-box;
     min-height: 1em;

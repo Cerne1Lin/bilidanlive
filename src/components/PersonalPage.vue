@@ -184,10 +184,14 @@ function signOrOut() {
     }
 }
 
-onMounted(() => {
-    if (!props.userInfo.is_login) {
-        selectIndex.value = 1
-    }
+onMounted(async () => {
+    setTimeout(() => {
+        if (!props.userInfo.is_login) {
+            selectIndex.value = 1
+        } else {
+            selectIndex.value = 0
+        }
+    }, 500)
 })
 
 onUnmounted(() => {

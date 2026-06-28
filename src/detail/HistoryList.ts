@@ -74,7 +74,7 @@ function addLocalHistory(room: RoomInfo) {
     const list = localHistory.value.filter(it => it.room_id !== room.room_id)
     list.unshift({
         title: room.title,
-        cover: room.keyframe,
+        cover: room.user_cover,
         author_name: room.user_info?.uname ?? '',
         author_face: room.user_info?.face ?? '',
         room_id: room.room_id,

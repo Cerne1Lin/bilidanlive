@@ -83,6 +83,7 @@ export interface RoomInfo {
     area_name: string
     parent_area_name: string
     title: string
+    user_cover: string
     keyframe: string
     live_time: string
     user_info?: {

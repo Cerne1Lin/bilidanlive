@@ -619,6 +619,7 @@ pub async fn get_room_info(
                     area_name: data.area_name,
                     parent_area_name: data.parent_area_name,
                     title: data.title,
+                    user_cover: data.user_cover,
                     keyframe: data.keyframe,
                     live_time: data.live_time,
                     user_info,

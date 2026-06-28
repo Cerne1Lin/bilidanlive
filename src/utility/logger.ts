@@ -35,18 +35,16 @@ export function trace(message: string): Promise<void> {
 
 export const logSize = ref<number>(0)
 
-export async function getLogSize() {
-  try {
-    logSize.value = await invoke('get_log_file_size')
-  } catch (err) {
+export function getLogSize() {
+  invoke<number>('get_log_file_size').then((val: number) => {
+    logSize.value = val
+  }).catch((err) => {
     logError(String(err))
-  }
+  })
 }
 
-export async function cleanLog() {
-  try {
-    await invoke('clean_log_files')
-  } catch (err) {
+export function cleanLog() {
+  invoke('clean_log_files').catch((err) => {
     logError(String(err))
-  }
+  })
 }

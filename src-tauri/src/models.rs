@@ -310,6 +310,7 @@ pub struct RoomInfo {
     pub area_name: String,
     pub parent_area_name: String,
     pub title: String,
+    pub user_cover: String,
     pub keyframe: String,  // 关键帧
     pub live_time: String, // "YYYY-MM-DD HH:mm:ss"
     pub user_info: Option<UserInfo>,
@@ -339,6 +340,8 @@ pub(crate) struct RoomInfoRaw {
     pub(crate) parent_area_name: String,
     #[serde(default)]
     pub(crate) title: String,
+    #[serde(default)]
+    pub(crate) user_cover: String,
     #[serde(default)]
     pub(crate) keyframe: String,
     #[serde(default)]

@@ -89,8 +89,8 @@
                 :hl-color="hlColor"
             />
             <SetItem :title="'日志文件大小'" :desc="logSizeStr" :type="'text-btn'" :btn-text="'清除'" @btn-click="async () => {
-                await cleanLog()
-                await getLogSize()
+                cleanLog()
+                getLogSize()
             }"/>
             <SetItem :title="'关于'" :type="'none'" :icon="svg.aboutSvg" :accent-color="accentColor"/>
         </div>
@@ -119,7 +119,7 @@ const isWindowsPlatform = computed(() => platform.value === 'windows')
 
 const logSizeStr = computed(() => {
     if (logSize.value >= 1024 && logSize.value <= 1024 * 1024) {
-        return (logSize.value / 1024).toFixed + 'KB' 
+        return (logSize.value / 1024).toFixed(2) + 'KB' 
     } else if (logSize.value >= 1024 * 1024) {
         return (logSize.value / (1024 * 1024)).toFixed(2) + 'MB'
     } else {
@@ -128,7 +128,7 @@ const logSizeStr = computed(() => {
 })
 
 onMounted(() => {
-    getLogSize().then()
+    getLogSize()
 })
 
 function onSliderUpdate(item: SetItemRequire, val: string | number) {

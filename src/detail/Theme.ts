@@ -1,7 +1,6 @@
 import { computed, ref } from "vue";
 import settings  from "./Setting";
 import { isTransparentBack } from "./WindowControl";
-import { invoke } from "@tauri-apps/api/core";
 
 export interface ThemeColors {
     label: string;

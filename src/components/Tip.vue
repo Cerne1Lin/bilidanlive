@@ -1,10 +1,24 @@
 <template>
     <div class="tips-list">
         <TransitionGroup name="list" appear>
-            <div class="tip-item" :class="item.level" v-for="item in items" :key="item.key">
-                <div class="icon" :class="item.level"><SvgIcon :svg-raw="getIcon(item.level)" :size="'16px'"/></div>
+            <div
+                class="tip-item"
+                :class="item.level"
+                v-for="item in items"
+                :key="item.key"
+            >
+                <div class="icon" :class="item.level">
+                    <SvgIcon :svg-raw="getIcon(item.level)" :size="'16px'" />
+                </div>
                 <div class="message">{{ item.message }}</div>
-                <div v-if="item.canClose" class="icon" id="close-btn" @click="removeTip(item.key)"><SvgIcon :svg-raw="svg.closeSvg" :size="'16px'" /></div>
+                <div
+                    v-if="item.canClose"
+                    class="icon"
+                    id="close-btn"
+                    @click="removeTip(item.key)"
+                >
+                    <SvgIcon :svg-raw="svg.closeSvg" :size="'16px'" />
+                </div>
             </div>
         </TransitionGroup>
     </div>
@@ -71,12 +85,12 @@
 .tip-item.success {
     border-color: yellowgreen;
     background-color: rgb(232, 255, 185);
-    color: yellowgreen
+    color: yellowgreen;
 }
 .tip-item.warning {
     border-color: orange;
     background-color: rgb(245, 221, 175);
-    color: orange
+    color: orange;
 }
 .tip-item.error {
     border-color: rgb(249, 70, 70);
@@ -91,23 +105,23 @@
 </style>
 
 <script setup lang="ts">
-import { svg } from '../detail/Assets'
-import SvgIcon from './SvgIcon.vue'
-import { type TipLevel, type TipItem, removeTip } from '../utility/tip'
+import { svg } from "../detail/Assets";
+import SvgIcon from "./SvgIcon.vue";
+import { type TipLevel, type TipItem, removeTip } from "../utility/tip";
 
 defineProps<{
-    items: TipItem[]
-}>()
+    items: TipItem[];
+}>();
 function getIcon(level: TipLevel): string {
     switch (level) {
-        case 'success':
-            return svg.successSvg
-        case 'info':
-            return svg.infoSvg
-        case 'warning':
-            return svg.warningSvg
-        case 'error':
-            return svg.errorSvg
+        case "success":
+            return svg.successSvg;
+        case "info":
+            return svg.infoSvg;
+        case "warning":
+            return svg.warningSvg;
+        case "error":
+            return svg.errorSvg;
     }
 }
 </script>

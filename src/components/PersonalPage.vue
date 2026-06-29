@@ -1,215 +1,344 @@
 <template>
     <div class="personal-container" :style="cssVars">
         <div class="personal-info" v-loading="isLoading.uLoading">
-            <div class="personal-avater" title="进入空间" @click="openBiliSpace(userInfo.mid)"><BiliImg v-show="userInfo.face !== ''" :src="userInfo.face" :default="img.defaultFace" :use-disk="true"/></div>
+            <div
+                class="personal-avater"
+                title="进入空间"
+                @click="openBiliSpace(userInfo.mid)"
+            >
+                <BiliImg
+                    v-show="userInfo.face !== ''"
+                    :src="userInfo.face"
+                    :default="img.defaultFace"
+                    :use-disk="true"
+                />
+            </div>
             <div class="info-content">
-                <div class="name"><span>{{ userInfo.uname }}</span></div>
+                <div class="name">
+                    <span>{{ userInfo.uname }}</span>
+                </div>
                 <div class="level"></div>
-                <div class="login-btn" @click="signOrOut"
-                    :title="userInfo.is_login?'退出登陆':'登陆'"
+                <div
+                    class="login-btn"
+                    @click="signOrOut"
+                    :title="userInfo.is_login ? '退出登陆' : '登陆'"
                 >
-                    <SvgIcon :svg-raw="userInfo.is_login?svg.logoutSvg:svg.loginSvg" />
+                    <SvgIcon
+                        :svg-raw="
+                            userInfo.is_login ? svg.logoutSvg : svg.loginSvg
+                        "
+                    />
                 </div>
             </div>
         </div>
         <div class="sign-qrcode" v-if="showQrcode">
             <div class="qrcode-btns">
-                <div class="qrcode-btn" id="qrcode-flush" @click="getQrcodeAndCheck" title="刷新"><SvgIcon :svg-raw="svg.flushSvg" /></div>
-                <div class="qrcode-btn" @click="showQrcode = false" title="关闭"><SvgIcon :svg-raw="svg.closeSvg" /></div>
+                <div
+                    class="qrcode-btn"
+                    id="qrcode-flush"
+                    @click="getQrcodeAndCheck"
+                    title="刷新"
+                >
+                    <SvgIcon :svg-raw="svg.flushSvg" />
+                </div>
+                <div
+                    class="qrcode-btn"
+                    @click="showQrcode = false"
+                    title="关闭"
+                >
+                    <SvgIcon :svg-raw="svg.closeSvg" />
+                </div>
             </div>
-            <QrcodeVue :value="qrcodeUrl" :size="200" :render-as="'svg'" :background="'transparent'" :foreground="hlColor"/>
+            <QrcodeVue
+                :value="qrcodeUrl"
+                :size="200"
+                :render-as="'svg'"
+                :background="'transparent'"
+                :foreground="hlColor"
+            />
             <div id="tip">{{ qrcodeTip }}</div>
         </div>
-        <div class="live-now" :class="{ 'hide': followingLive.live_count === 0 }">
-            <div class="live-item" v-for="item in followingLive.list" :title="item.uname + ':\n' + item.title" @click="emit('enterRoom', item.room_id)">
+        <div class="live-now" :class="{ hide: followingLive.live_count === 0 }">
+            <div
+                class="live-item"
+                v-for="item in followingLive.list"
+                :title="item.uname + ':\n' + item.title"
+                @click="emit('enterRoom', item.room_id)"
+            >
                 <div class="live-icon"><span>Live</span></div>
-                <div class="live-avater"><BiliImg :src="item.face" :default="img.defaultFace" :use-disk="true"/></div>
+                <div class="live-avater">
+                    <BiliImg
+                        :src="item.face"
+                        :default="img.defaultFace"
+                        :use-disk="true"
+                    />
+                </div>
             </div>
         </div>
         <div class="bottom-container">
             <div class="bottom-title-bar">
                 <div class="bottom-title-text">
                     <div class="page-item" @click="selectIndex = 0">
-                        <SvgIcon :svg-raw="svg.liveSvg" :size="'20px'"/>
-                        <span class="page-item-text" :class="{'hide':selectIndex !== 0}">{{ '正在直播 ' + followingLive.live_count }}</span>
+                        <SvgIcon :svg-raw="svg.liveSvg" :size="'20px'" />
+                        <span
+                            class="page-item-text"
+                            :class="{ hide: selectIndex !== 0 }"
+                            >{{ "正在直播 " + followingLive.live_count }}</span
+                        >
                     </div>
-                    <div class="page-item" :class="{ 'show':selectIndex === 1}" @click="selectIndex = 1">
+                    <div
+                        class="page-item"
+                        :class="{ show: selectIndex === 1 }"
+                        @click="selectIndex = 1"
+                    >
                         <SvgIcon :svg-raw="svg.historySvg" :size="'16px'" />
-                        <span class="page-item-text" :class="{'hide':selectIndex !==1}">{{ '历史记录' }}</span>
+                        <span
+                            class="page-item-text"
+                            :class="{ hide: selectIndex !== 1 }"
+                            >{{ "历史记录" }}</span
+                        >
                     </div>
                 </div>
                 <div class="bottom-btns">
-                    <div class="bottom-btn" :class="'flush'" title="刷新列表" @click="() => {emit('flush')}"><SvgIcon :svg-raw="svg.flushSvg" /></div>
+                    <div
+                        class="bottom-btn"
+                        :class="'flush'"
+                        title="刷新列表"
+                        @click="
+                            () => {
+                                emit('flush');
+                            }
+                        "
+                    >
+                        <SvgIcon :svg-raw="svg.flushSvg" />
+                    </div>
                 </div>
             </div>
             <div class="switch-container">
-                <div class="live-full" v-loading="isLoading.fLoading" :class="{ 'page-hide': selectIndex !== 0, 'windows-scrollbar-hidden': isWindowsPlatform }">
-                    <div class="live-full-item" v-for="item in followingLive.list">
+                <div
+                    class="live-full"
+                    v-loading="isLoading.fLoading"
+                    :class="{
+                        'page-hide': selectIndex !== 0,
+                        'windows-scrollbar-hidden': isWindowsPlatform,
+                    }"
+                >
+                    <div
+                        class="live-full-item"
+                        v-for="item in followingLive.list"
+                    >
                         <div class="face-name">
-                            <div class="face" title="在浏览器中打开" @click="openBiliLiveRoom(item.room_id)"><BiliImg :src="item.face" :default="img.defaultFace" :use-disk="true"/></div>
-                            <div class="name"><span>{{ item.uname }}</span></div>
+                            <div
+                                class="face"
+                                title="在浏览器中打开"
+                                @click="openBiliLiveRoom(item.room_id)"
+                            >
+                                <BiliImg
+                                    :src="item.face"
+                                    :default="img.defaultFace"
+                                    :use-disk="true"
+                                />
+                            </div>
+                            <div class="name">
+                                <span>{{ item.uname }}</span>
+                            </div>
                         </div>
-                        <div class="room-cover-title" @click="emit('enterRoom', item.room_id)">
-                            <div class="room-cover"><BiliImg :src="item.cover_url" :use-disk="true"/></div>
+                        <div
+                            class="room-cover-title"
+                            @click="emit('enterRoom', item.room_id)"
+                        >
+                            <div class="room-cover">
+                                <BiliImg
+                                    :src="item.cover_url"
+                                    :use-disk="true"
+                                />
+                            </div>
                             <div class="title-info">
-                                <div class="title"><span>{{ item.title }}</span></div>
-                                <div class="area-online"><span>{{ item.area_v2_name + ' · ' + formatOnline(item.online) + '人看过'}}</span></div>
+                                <div class="title">
+                                    <span>{{ item.title }}</span>
+                                </div>
+                                <div class="area-online">
+                                    <span>{{
+                                        item.area_v2_name +
+                                        " · " +
+                                        formatOnline(item.online) +
+                                        "人看过"
+                                    }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <HistoryList class="history-list" :class="{'page-hide': selectIndex !== 1}" :items="historyItems" @enter-room="(id: number) => { emit('enterRoom', id) }" v-loading="isLoading.hLoading"/>
+                <HistoryList
+                    class="history-list"
+                    :class="{ 'page-hide': selectIndex !== 1 }"
+                    :items="historyItems"
+                    @enter-room="
+                        (id: number) => {
+                            emit('enterRoom', id);
+                        }
+                    "
+                    v-loading="isLoading.hLoading"
+                />
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import QrcodeVue from 'qrcode.vue'
-import { computed, ref, onUnmounted, onMounted } from 'vue'
-import { getQrcode, checkQrcodeState, type QrcodeRes, type QrcodeState } from '../detail/Login'
-import { svg } from '../detail/Assets'
-import type { NavUserInfo } from '../detail/PersonalData'
-import { FollowingLiveRes } from '../detail/FollowingLive'
-import BiliImg from './BiliImg.vue'
-import SvgIcon from './SvgIcon.vue'
-import { addTip } from '../utility/tip.ts'
-import { openBiliSpace, openBiliLiveRoom } from '../detail/Opener.ts'
-import { img } from '../detail/Assets'
-import HistoryList from './HistoryList.vue'
-import { HistoryItem } from '../detail/HistoryList.ts'
-import { radius } from '../detail/Theme.ts'
-import { platform } from '../detail/WindowControl'
+import QrcodeVue from "qrcode.vue";
+import { computed, ref, onUnmounted, onMounted } from "vue";
+import {
+    getQrcode,
+    checkQrcodeState,
+    type QrcodeRes,
+    type QrcodeState,
+} from "../detail/Login";
+import { svg } from "../detail/Assets";
+import type { NavUserInfo } from "../detail/PersonalData";
+import { FollowingLiveRes } from "../detail/FollowingLive";
+import BiliImg from "./BiliImg.vue";
+import SvgIcon from "./SvgIcon.vue";
+import { addTip } from "../utility/tip.ts";
+import { openBiliSpace, openBiliLiveRoom } from "../detail/Opener.ts";
+import { img } from "../detail/Assets";
+import HistoryList from "./HistoryList.vue";
+import { HistoryItem } from "../detail/HistoryList.ts";
+import { radius } from "../detail/Theme.ts";
+import { platform } from "../detail/WindowControl";
 
-const props = withDefaults(defineProps<{
-    userInfo: NavUserInfo,
-    followingLive: FollowingLiveRes
-    historyItems: HistoryItem[]
-    isLoading: {
-        uLoading: boolean,
-        fLoading: boolean,
-        hLoading: boolean,
-    }
-    accentColor?: string,
-    bgColor?: string,
-    hlColor?: string,
-}>(), {
-    accentColor: 'pink',
-    bgColor: 'transparent',
-    hlColor: 'white',
-})
-const isWindowsPlatform = computed(() => platform.value === 'windows')
+const props = withDefaults(
+    defineProps<{
+        userInfo: NavUserInfo;
+        followingLive: FollowingLiveRes;
+        historyItems: HistoryItem[];
+        isLoading: {
+            uLoading: boolean;
+            fLoading: boolean;
+            hLoading: boolean;
+        };
+        accentColor?: string;
+        bgColor?: string;
+        hlColor?: string;
+    }>(),
+    {
+        accentColor: "pink",
+        bgColor: "transparent",
+        hlColor: "white",
+    },
+);
+const isWindowsPlatform = computed(() => platform.value === "windows");
 
 const cssVars = computed(() => ({
-    '--hl-color': `${props.hlColor}`,
-    '--accent-color': `${props.accentColor}`,
-    '--bg-color': `${props.bgColor}`,
-    '--radius': radius.value
-}))
-const showQrcode = ref<boolean>(false)
-const qrcodeUrl = ref<string>('')
-const qrcodeTip = ref<string>('使用App扫描以登陆')
+    "--hl-color": `${props.hlColor}`,
+    "--accent-color": `${props.accentColor}`,
+    "--bg-color": `${props.bgColor}`,
+    "--radius": radius.value,
+}));
+const showQrcode = ref<boolean>(false);
+const qrcodeUrl = ref<string>("");
+const qrcodeTip = ref<string>("使用App扫描以登陆");
 let canFlush: boolean = true;
-const selectIndex = ref(0)
+const selectIndex = ref(0);
 
-let pollTimer: ReturnType<typeof setInterval> | null = null
+let pollTimer: ReturnType<typeof setInterval> | null = null;
 
 function clearPollTimer() {
     if (pollTimer !== null) {
-        clearInterval(pollTimer)
-        pollTimer = null
+        clearInterval(pollTimer);
+        pollTimer = null;
     }
 }
 
 const emit = defineEmits<{
-    (e: 'loginSuccess'): void,
-    (e: 'logout'): void,
-    (e: 'flush'): void,
-    (e: 'enterRoom', roomId: number): void,
-}>()
+    (e: "loginSuccess"): void;
+    (e: "logout"): void;
+    (e: "flush"): void;
+    (e: "enterRoom", roomId: number): void;
+}>();
 
 async function pollQrcodeStatus(qrcodeKey: string) {
     try {
-        clearPollTimer()
+        clearPollTimer();
         pollTimer = setInterval(async () => {
-            const state: QrcodeState = await checkQrcodeState(qrcodeKey)
+            const state: QrcodeState = await checkQrcodeState(qrcodeKey);
             switch (state.status) {
-                case 'success':
-                    clearPollTimer()
-                    showQrcode.value = false
-                    selectIndex.value = 0
-                    emit('loginSuccess')
-                    break
-                case 'scanned':
-                    qrcodeTip.value = '已扫描，请在手机上确认'
-                    canFlush = true
-                    break
-                case 'expired':
-                    clearPollTimer()
-                    qrcodeTip.value = '二维码已过期，请重新获取'
-                    canFlush = true
-                    break
-                case 'unknown':
-                    clearPollTimer()
-                    qrcodeTip.value = state.message
-                    canFlush = true
-                    break
-                case 'pending':
+                case "success":
+                    clearPollTimer();
+                    showQrcode.value = false;
+                    selectIndex.value = 0;
+                    emit("loginSuccess");
+                    break;
+                case "scanned":
+                    qrcodeTip.value = "已扫描，请在手机上确认";
+                    canFlush = true;
+                    break;
+                case "expired":
+                    clearPollTimer();
+                    qrcodeTip.value = "二维码已过期，请重新获取";
+                    canFlush = true;
+                    break;
+                case "unknown":
+                    clearPollTimer();
+                    qrcodeTip.value = state.message;
+                    canFlush = true;
+                    break;
+                case "pending":
                 default:
                     // 继续轮询，不操作
-                    break
+                    break;
             }
-        }, 2000)
+        }, 2000);
     } catch (err) {
-        addTip(String(err), 'error', 3)
+        addTip(String(err), "error", 3);
     }
 }
 
 function getQrcodeAndCheck() {
     if (canFlush) {
-        canFlush = false
-        getQrcode().then((res: QrcodeRes) => {
-            if (res.code === 0 && res.data) {
-                qrcodeUrl.value = res.data.url
-                qrcodeTip.value = '使用App扫描以登陆'
-                showQrcode.value = true
-                pollQrcodeStatus(res.data.qrcode_key)
-            }
-        }).catch((err) => {
-            addTip(String(err),'error',3)
-        })
+        canFlush = false;
+        getQrcode()
+            .then((res: QrcodeRes) => {
+                if (res.code === 0 && res.data) {
+                    qrcodeUrl.value = res.data.url;
+                    qrcodeTip.value = "使用App扫描以登陆";
+                    showQrcode.value = true;
+                    pollQrcodeStatus(res.data.qrcode_key);
+                }
+            })
+            .catch((err) => {
+                addTip(String(err), "error", 3);
+            });
     }
 }
 
 function signOrOut() {
     if (props.userInfo.is_login) {
-        emit('logout')
+        emit("logout");
     } else {
-        getQrcodeAndCheck()
+        getQrcodeAndCheck();
     }
 }
 
 onMounted(async () => {
     setTimeout(() => {
         if (!props.userInfo.is_login) {
-            selectIndex.value = 1
+            selectIndex.value = 1;
         } else {
-            selectIndex.value = 0
+            selectIndex.value = 0;
         }
-    }, 500)
-})
+    }, 500);
+});
 
 onUnmounted(() => {
-    clearPollTimer()
-})
+    clearPollTimer();
+});
 
 function formatOnline(n: number): string {
-    if (n < 1000) return String(n)
-    if (n < 10000) return (n / 1000).toFixed(1) + 'k'
-    return (n / 10000).toFixed(1) + 'w'
+    if (n < 1000) return String(n);
+    if (n < 10000) return (n / 1000).toFixed(1) + "k";
+    return (n / 10000).toFixed(1) + "w";
 }
-
-
 </script>
 
 <style scoped>
@@ -217,7 +346,9 @@ function formatOnline(n: number): string {
     flex: 0 0 100%;
     margin-left: -100%;
     overflow-x: hidden;
-    transition: transform 0.4s ease-out, opacity 0.3s ease-out;
+    transition:
+        transform 0.4s ease-out,
+        opacity 0.3s ease-out;
 }
 .live-full.page-hide,
 .history-list.page-hide {
@@ -444,7 +575,9 @@ function formatOnline(n: number): string {
     overflow-y: auto;
     border-radius: 0 0 16px 16px;
     box-sizing: border-box;
-    transition: transform 0.4s ease-out, opacity 0.3s ease-out;
+    transition:
+        transform 0.4s ease-out,
+        opacity 0.3s ease-out;
 }
 .windows-scrollbar-hidden {
     -ms-overflow-style: none;
@@ -511,7 +644,7 @@ function formatOnline(n: number): string {
     object-fit: cover;
 }
 .personal-avater:hover :deep(img) {
-    filter: brightness(0.7)
+    filter: brightness(0.7);
 }
 .name {
     font-size: 1.2em;
@@ -550,7 +683,7 @@ function formatOnline(n: number): string {
     cursor: pointer;
 }
 .live-avater {
-    height: 100%; 
+    height: 100%;
     border: 2px solid var(--accent-color);
     border-radius: 1.5em;
     aspect-ratio: 1;
@@ -584,10 +717,8 @@ function formatOnline(n: number): string {
 }
 </style>
 
-
 <style>
 .live-now::-webkit-scrollbar {
     display: none;
 }
-
 </style>

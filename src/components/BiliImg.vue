@@ -1,7 +1,12 @@
 <template>
     <div class="bili-img-wrapper">
         <div class="placeholder" v-show="!dataUrl && !defaultUrl">
-            <span class="dot" v-for="i in 3" :key="i" :style="{ animationDelay: `${(i - 1) * 0.25}s` }"></span>
+            <span
+                class="dot"
+                v-for="i in 3"
+                :key="i"
+                :style="{ animationDelay: `${(i - 1) * 0.25}s` }"
+            ></span>
         </div>
         <img
             v-show="dataUrl || defaultUrl"
@@ -15,92 +20,109 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, toRef, onUnmounted } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
+import { ref, watch, toRef, onUnmounted } from "vue";
+import { invoke } from "@tauri-apps/api/core";
 
-const props = withDefaults(defineProps<{
-    src?: string
-    default?: string
-    bgColor?: string
-    maxRetries?: number
-    useDisk?: boolean
-}>(), {
-    src: '',
-    default: '',
-    bgColor: 'rgba(255, 255, 255, 0.15)',
-    maxRetries: 3,
-    useDisk: false,
-})
+const props = withDefaults(
+    defineProps<{
+        src?: string;
+        default?: string;
+        bgColor?: string;
+        maxRetries?: number;
+        useDisk?: boolean;
+    }>(),
+    {
+        src: "",
+        default: "",
+        bgColor: "rgba(255, 255, 255, 0.15)",
+        maxRetries: 3,
+        useDisk: false,
+    },
+);
 
-const dataUrl = ref('')
-const defaultUrl = ref('')
-const loaded = ref(false)
+const dataUrl = ref("");
+const defaultUrl = ref("");
+const loaded = ref(false);
 
-let retries = 0
-let pendingUrl = ''
+let retries = 0;
+let pendingUrl = "";
 
 async function convert(url: string) {
-    loaded.value = false
-    dataUrl.value = ''
-    pendingUrl = url
+    loaded.value = false;
+    dataUrl.value = "";
+    pendingUrl = url;
 
-    if (!url) return
-    if (url.startsWith('data:')) {
-        dataUrl.value = url
-        loaded.value = true
-        return
+    if (!url) return;
+    if (url.startsWith("data:")) {
+        dataUrl.value = url;
+        loaded.value = true;
+        return;
     }
 
     try {
-        dataUrl.value = await invoke<string>('fetch_image_base64', { url, useDisk: props.useDisk })
-        loaded.value = true
+        dataUrl.value = await invoke<string>("fetch_image_base64", {
+            url,
+            useDisk: props.useDisk,
+        });
+        loaded.value = true;
     } catch {
-        scheduleRetry()
+        scheduleRetry();
     }
 }
 
 async function loadDefault(url: string) {
-    if (!url || url.startsWith('data:')) {
-        defaultUrl.value = url || ''
-        return
+    if (!url || url.startsWith("data:")) {
+        defaultUrl.value = url || "";
+        return;
     }
-    if (url.startsWith('/') || url.startsWith('tauri://')) {
-        defaultUrl.value = url
-        return
+    if (url.startsWith("/") || url.startsWith("tauri://")) {
+        defaultUrl.value = url;
+        return;
     }
     try {
-        defaultUrl.value = await invoke<string>('fetch_image_base64', { url, useDisk: props.useDisk })
+        defaultUrl.value = await invoke<string>("fetch_image_base64", {
+            url,
+            useDisk: props.useDisk,
+        });
     } catch {
-        defaultUrl.value = ''
+        defaultUrl.value = "";
     }
 }
 
 function scheduleRetry() {
     if (pendingUrl && retries < props.maxRetries) {
-        retries++
-        convert(pendingUrl)
+        retries++;
+        convert(pendingUrl);
     }
 }
 
 function onLoad() {
-    retries = 0
-    loaded.value = true
+    retries = 0;
+    loaded.value = true;
 }
 
 function onError() {
-    scheduleRetry()
+    scheduleRetry();
 }
 
-watch(toRef(props, 'src'), (newUrl) => {
-    retries = 0
-    convert(newUrl || '')
-}, { immediate: true })
+watch(
+    toRef(props, "src"),
+    (newUrl) => {
+        retries = 0;
+        convert(newUrl || "");
+    },
+    { immediate: true },
+);
 
-watch(toRef(props, 'default'), (newUrl) => {
-    loadDefault(newUrl || '')
-}, { immediate: true })
+watch(
+    toRef(props, "default"),
+    (newUrl) => {
+        loadDefault(newUrl || "");
+    },
+    { immediate: true },
+);
 
-onUnmounted(() => {})
+onUnmounted(() => {});
 </script>
 
 <style scoped>

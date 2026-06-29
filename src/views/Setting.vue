@@ -1,8 +1,12 @@
 <template>
-    <div class="set-container" :style="cssVars" :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }">
+    <div
+        class="set-container"
+        :style="cssVars"
+        :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }"
+    >
         <div class="items-container">
             <div class="title">
-                <SvgIcon :svg-raw="svg.playSvg" :size="'1.2em'"/>
+                <SvgIcon :svg-raw="svg.playSvg" :size="'1.2em'" />
                 <span>播放</span>
             </div>
             <SetItem
@@ -27,7 +31,7 @@
         </div>
         <div class="items-container">
             <div class="title">
-                <SvgIcon :svg-raw="svg.themeSvg" :size="'1.2em'"/>
+                <SvgIcon :svg-raw="svg.themeSvg" :size="'1.2em'" />
                 <span>外观</span>
             </div>
             <SetItem
@@ -51,13 +55,25 @@
             />
             <div class="color-theme">
                 <div class="sub-title">配色</div>
-                <div class="color-list" :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }">
+                <div
+                    class="color-list"
+                    :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }"
+                >
                     <div class="color-item" v-for="item in THEMES">
-                        <div class="preview" 
-                            :style="{backgroundColor: item.light, borderColor: item.medium}"
+                        <div
+                            class="preview"
+                            :style="{
+                                backgroundColor: item.light,
+                                borderColor: item.medium,
+                            }"
                             @click="setColorTheme(item)"
                         >
-                            <SvgIcon :svg-raw="svg.checkSvg" :size="'36px'" :color="item.medium" v-show="settings.color.value === item.label"/>
+                            <SvgIcon
+                                :svg-raw="svg.checkSvg"
+                                :size="'36px'"
+                                :color="item.medium"
+                                v-show="settings.color.value === item.label"
+                            />
                         </div>
                         <div class="color-name">{{ item.name }}</div>
                     </div>
@@ -66,7 +82,7 @@
         </div>
         <div class="items-container">
             <div class="title">
-                <SvgIcon :svg-raw="svg.otherSvg" :size="'1.2em'"/>
+                <SvgIcon :svg-raw="svg.otherSvg" :size="'1.2em'" />
                 <span>其他</span>
             </div>
             <SetItem
@@ -88,48 +104,71 @@
                 :bg-color="bgLightColor"
                 :hl-color="hlColor"
             />
-            <SetItem :title="'日志文件大小'" :desc="logSizeStr" :type="'text-btn'" :btn-text="'清除'" @btn-click="async () => {
-                cleanLog()
-                getLogSize()
-            }"/>
-            <SetItem :title="'关于'" :type="'none'" :icon="svg.aboutSvg" :accent-color="accentColor"/>
+            <SetItem
+                :title="'日志文件大小'"
+                :desc="logSizeStr"
+                :type="'text-btn'"
+                :btn-text="'清除'"
+                @btn-click="
+                    async () => {
+                        cleanLog();
+                        getLogSize();
+                    }
+                "
+            />
+            <SetItem
+                :title="'关于'"
+                :type="'none'"
+                :icon="svg.aboutSvg"
+                :accent-color="accentColor"
+                @click="openUrl('https://github.com/Cerne1Lin/bilidanlive')"
+                :style="{ cursor: 'pointer' }"
+            />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
-import SetItem from '../components/SetItem.vue';
-import { settingItems, type SetItemRequire } from '../detail/Setting.ts';
-import { THEMES, accentColor, hlColor, bgLightColor, ThemeColors, radius } from '../detail/Theme.ts';
-import settings from '../detail/Setting.ts'
-import SvgIcon from '../components/SvgIcon.vue';
-import { svg } from '../detail/Assets.ts';
-import { logSize, getLogSize, cleanLog } from '../utility/logger.ts';
-import { platform } from '../detail/WindowControl';
+import { computed, onMounted } from "vue";
+import SetItem from "../components/SetItem.vue";
+import { settingItems, type SetItemRequire } from "../detail/Setting.ts";
+import {
+    THEMES,
+    accentColor,
+    hlColor,
+    bgLightColor,
+    ThemeColors,
+    radius,
+} from "../detail/Theme.ts";
+import settings from "../detail/Setting.ts";
+import SvgIcon from "../components/SvgIcon.vue";
+import { svg } from "../detail/Assets.ts";
+import { logSize, getLogSize, cleanLog } from "../utility/logger.ts";
+import { platform } from "../detail/WindowControl";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 const cssVars = computed(() => ({
-    '--hl-color': hlColor.value,
-    '--accent-color': accentColor.value,
-    '--bg-color': bgLightColor.value,
-    '--radius': radius.value,
-}))
+    "--hl-color": hlColor.value,
+    "--accent-color": accentColor.value,
+    "--bg-color": bgLightColor.value,
+    "--radius": radius.value,
+}));
 
-const isWindowsPlatform = computed(() => platform.value === 'windows')
+const isWindowsPlatform = computed(() => platform.value === "windows");
 
 const logSizeStr = computed(() => {
     if (logSize.value >= 1024 && logSize.value <= 1024 * 1024) {
-        return (logSize.value / 1024).toFixed(2) + 'KB' 
+        return (logSize.value / 1024).toFixed(2) + "KB";
     } else if (logSize.value >= 1024 * 1024) {
-        return (logSize.value / (1024 * 1024)).toFixed(2) + 'MB'
+        return (logSize.value / (1024 * 1024)).toFixed(2) + "MB";
     } else {
-        return logSize.value.toFixed(2) + 'B'
+        return logSize.value.toFixed(2) + "B";
     }
-})
+});
 
 onMounted(() => {
-    getLogSize()
-})
+    getLogSize();
+});
 
 function onSliderUpdate(item: SetItemRequire, val: string | number) {
     if (item.sliderValue) item.sliderValue.value = val;
@@ -139,7 +178,7 @@ function onToggleUpdate(item: SetItemRequire, val: boolean) {
 }
 
 function setColorTheme(item: ThemeColors) {
-    settings.color.value = item.label
+    settings.color.value = item.label;
 }
 </script>
 
@@ -160,7 +199,7 @@ function setColorTheme(item: ThemeColors) {
     align-items: center;
 }
 .sub-title {
-    color: var(--hl-color)
+    color: var(--hl-color);
 }
 .color-name {
     color: var(--hl-color);

@@ -112,6 +112,7 @@ pub fn run() {
             web_client::get_history_danmu,
             web_client::get_history_list,
             web_client::record_room_entry,
+            web_client::get_rooms_info,
             window_config::set_window_transparent,
             window_config::get_platform,
             live_ws::connect_live_room,

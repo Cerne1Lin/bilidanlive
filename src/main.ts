@@ -13,18 +13,18 @@ async function main() {
     setupAutoSave();
     // 启动时从 Rust 加载设置到 ref（完成前 watcher 不会触发）
     await initSettings();
-    const platform = await invoke<string>('get_platform')
-    if (platform === 'macos') {
-        radius.value = '16px'
+    const platform = await invoke<string>("get_platform");
+    if (platform === "macos") {
+        radius.value = "16px";
     }
-    wPlatform.value = platform
+    wPlatform.value = platform;
     const app = createApp(App);
     app.config.errorHandler = (err) => {
         logError(`[Vue] 全局错误: ${String(err)}`);
         console.error(err);
-    }
+    };
     app.directive("loading", loadingDirective);
-    app.use(router)
+    app.use(router);
     app.mount("#app");
 }
 main();

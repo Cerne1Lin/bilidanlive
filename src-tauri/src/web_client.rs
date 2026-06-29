@@ -456,13 +456,7 @@ pub async fn get_live_play_url(
     cookie_store: State<'_, CookieStore>,
     app_handle: tauri::AppHandle,
 ) -> Result<LivePlayUrlRes, String> {
-    let auth = {
-        cookie_store
-            .auth
-            .lock()
-            .map_err(|e| e.to_string())?
-            .clone()
-    };
+    let auth = { cookie_store.auth.lock().map_err(|e| e.to_string())?.clone() };
     let res = fetch_play_url_raw(room_id, auth.as_ref(), &app_handle).await?;
     debug!("[api] playUrl room={room_id} code={}", res.code);
 
@@ -562,9 +556,7 @@ pub(crate) async fn fetch_flv_url(
             info!("[live] 房间不存在或未开播 (code=19002003)");
             Err("19002003".to_string()) // 前端识别此 code
         }
-        (code, _) => {
-            Err(format!("获取流地址失败, code={}", code))
-        }
+        (code, _) => Err(format!("获取流地址失败, code={}", code)),
     }
 }
 
@@ -770,7 +762,10 @@ pub async fn get_history_danmu(
         }
     }
 
-    debug!("[api] gethistory room={room_id} -> {} messages", items.len());
+    debug!(
+        "[api] gethistory room={room_id} -> {} messages",
+        items.len()
+    );
     Ok(items)
 }
 
@@ -894,4 +889,93 @@ pub async fn record_room_entry(
         debug!("[room_entry] room={room_id} 上报成功");
     }
     Ok(())
+}
+
+#[tauri::command]
+pub async fn get_rooms_info(uids: Vec<u64>) -> Result<Vec<RoomInfo>, String> {
+    let mut map = HashMap::new();
+    map.insert("uids", uids);
+
+    let res = reqwest::Client::new()
+        .post("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids")
+        .header("Content-Type", "application/json")
+        .json(&map)
+        .send()
+        .await
+        .map_err(|e| format!("批量获取直播间信息发送失败 {}", e))?
+        .json::<serde_json::Value>()
+        .await
+        .map_err(|e| format!("解析批量直播间信息响应失败 {}", e))?;
+
+    let code = res.get("code").and_then(|c| c.as_i64()).unwrap_or(-1);
+    if code != 0 {
+        return Err(format!(
+            "[rooms_info] 批量获取直播间信息失败 code={}, msg={}",
+            code,
+            res.get("msg").and_then(|m| m.as_str()).unwrap_or("")
+        ));
+    }
+
+    let mut rooms = Vec::new();
+    if let Some(data) = res.get("data").and_then(|d| d.as_object()) {
+        for (_, room_val) in data {
+            rooms.push(RoomInfo {
+                uid: room_val.get("uid").and_then(|v| v.as_u64()).unwrap_or(0),
+                room_id: room_val
+                    .get("room_id")
+                    .and_then(|v| v.as_u64())
+                    .unwrap_or(0),
+                online: room_val.get("online").and_then(|v| v.as_u64()).unwrap_or(0) as u32,
+                live_status: room_val
+                    .get("live_status")
+                    .and_then(|v| v.as_u64())
+                    .unwrap_or(0) as u32,
+                area_name: room_val
+                    .get("area_v2_name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                parent_area_name: room_val
+                    .get("area_v2_parent_name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                title: room_val
+                    .get("title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                user_cover: room_val
+                    .get("cover_from_user")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                keyframe: room_val
+                    .get("keyframe")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                live_time: room_val
+                    .get("live_time")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                user_info: Some(UserInfo {
+                    uid: room_val.get("uid").and_then(|v| v.as_u64()).unwrap_or(0),
+                    uname: room_val
+                        .get("uname")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    face: room_val
+                        .get("face")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                }),
+            });
+        }
+    }
+
+    Ok(rooms)
 }

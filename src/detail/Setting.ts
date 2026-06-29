@@ -10,7 +10,13 @@ export interface SetItemRequire {
     title: string;
     desc?: string;
     icon?: string;
-    type: 'switch' | 'seg-slider' | 'slider' | 'none' | 'text-btn' | 'checkbox-btn';
+    type:
+        | "switch"
+        | "seg-slider"
+        | "slider"
+        | "none"
+        | "text-btn"
+        | "checkbox-btn";
     segments?: {
         label: string;
         value: number | string;
@@ -27,7 +33,7 @@ const glassmorphismBackground = ref<boolean>(true);
 const fontSize = ref<number>(16);
 const autoPlay = ref<boolean>(true);
 const audioOnly = ref<boolean>(false);
-const theme = ref<string>('');
+const theme = ref<string>("");
 const volume = ref<number>(50);
 const autoLinkWss = ref<boolean>(true);
 const color = ref<string>("pink");
@@ -39,7 +45,7 @@ export const playSettingItems: SetItemRequire[] = [
         title: "自动播放",
         desc: "进入直播间时自动开始播放",
         type: "switch",
-        toggleValue: autoPlay
+        toggleValue: autoPlay,
     },
     {
         key: "audio_only",
@@ -55,8 +61,7 @@ export const playSettingItems: SetItemRequire[] = [
         type: "switch",
         toggleValue: autoLinkWss,
     },
-
-]
+];
 // ── 设置项数组（只引用 ref，不内联创建） ────────────
 export const themeSettingItems: SetItemRequire[] = [
     {
@@ -72,11 +77,11 @@ export const themeSettingItems: SetItemRequire[] = [
         type: "seg-slider",
         sliderValue: fontSize,
         segments: [
-            { label: '0.5x', value: 8 },
-            { label: '0.75x', value: 12 },
-            { label: '1x', value: 16 },
-            { label: '1.25x', value: 20 },
-            { label: '1.5x', value: 24 },
+            { label: "0.5x", value: 8 },
+            { label: "0.75x", value: 12 },
+            { label: "1x", value: 16 },
+            { label: "1.25x", value: 20 },
+            { label: "1.5x", value: 24 },
         ],
     },
     {
@@ -86,10 +91,10 @@ export const themeSettingItems: SetItemRequire[] = [
         type: "checkbox-btn",
         sliderValue: theme,
         segments: [
-            { label: 'System', value: 'system' },
-            { label: 'Light', value: 'light' },
-            { label: 'Dark', value: 'dark' },
-        ]
+            { label: "System", value: "system" },
+            { label: "Light", value: "light" },
+            { label: "Dark", value: "dark" },
+        ],
     },
 ];
 
@@ -101,37 +106,40 @@ export const otherSettingItems: SetItemRequire[] = [
         type: "seg-slider",
         sliderValue: logLevel,
         segments: [
-            { label: 'TRACE', value: 'trace' },
-            { label: 'DEBUG', value: 'debug' },
-            { label: 'INFO',  value: 'info' },
-            { label: 'WARN',  value: 'warn' },
-            { label: 'ERROR', value: 'error' },
+            { label: "TRACE", value: "trace" },
+            { label: "DEBUG", value: "debug" },
+            { label: "INFO", value: "info" },
+            { label: "WARN", value: "warn" },
+            { label: "ERROR", value: "error" },
         ],
     },
-]
-export const settingItems = new Map<string, SetItemRequire[]>()
-settingItems.set('play', playSettingItems)
-settingItems.set('theme', themeSettingItems)
-settingItems.set('others', otherSettingItems)
+];
+export const settingItems = new Map<string, SetItemRequire[]>();
+settingItems.set("play", playSettingItems);
+settingItems.set("theme", themeSettingItems);
+settingItems.set("others", otherSettingItems);
 
 // ── 自动持久化 ────────────────────────────────────
 
 let initialized = false;
-const pendingUpdates = new Map<keyof AppSettings, ReturnType<typeof setTimeout>>();
+const pendingUpdates = new Map<
+    keyof AppSettings,
+    ReturnType<typeof setTimeout>
+>();
 
 /** 对每个设置 ref 建立 watch，值变化时自动调用 updateSetting */
 export function setupAutoSave(): void {
     for (const [_, v] of settingItems) {
         for (const item of v) {
-            if (item.key === 'theme' && item.sliderValue) {
+            if (item.key === "theme" && item.sliderValue) {
                 watch(item.sliderValue, (val) => {
-                    if (val === 'system') {
-                        useSystemTheme().start()
+                    if (val === "system") {
+                        useSystemTheme().start();
                     } else {
-                        useSystemTheme().stop()
+                        useSystemTheme().stop();
                     }
-                })
-                continue
+                });
+                continue;
             }
             const target = item.toggleValue ?? item.sliderValue;
             if (!target) continue;
@@ -142,10 +150,13 @@ export function setupAutoSave(): void {
                 if (prev) clearTimeout(prev);
                 // switch 立即生效，slider 延迟 200ms 避免拖拽时频繁写入
                 const delay = item.type === "switch" ? 0 : 200;
-                pendingUpdates.set(item.key, setTimeout(() => {
-                    pendingUpdates.delete(item.key);
-                    updateSetting(item.key, val as any);
-                }, delay));
+                pendingUpdates.set(
+                    item.key,
+                    setTimeout(() => {
+                        pendingUpdates.delete(item.key);
+                        updateSetting(item.key, val as any);
+                    }, delay),
+                );
             });
         }
     }
@@ -154,20 +165,26 @@ export function setupAutoSave(): void {
         if (!initialized) return;
         const prev = pendingUpdates.get("volume");
         if (prev) clearTimeout(prev);
-        pendingUpdates.set("volume", setTimeout(() => {
-            pendingUpdates.delete("volume");
-            updateSetting("volume", val);
-        }, 200));
+        pendingUpdates.set(
+            "volume",
+            setTimeout(() => {
+                pendingUpdates.delete("volume");
+                updateSetting("volume", val);
+            }, 200),
+        );
     });
     watch(color, (val) => {
         if (!initialized) return;
         const prev = pendingUpdates.get("color");
-        if (prev) clearTimeout(prev)
-        pendingUpdates.set("color", setTimeout(() => {
-            pendingUpdates.delete("color")
-            updateSetting("color", val);
-        }, 200))
-    })
+        if (prev) clearTimeout(prev);
+        pendingUpdates.set(
+            "color",
+            setTimeout(() => {
+                pendingUpdates.delete("color");
+                updateSetting("color", val);
+            }, 200),
+        );
+    });
 }
 
 // ── API ─────────────────────────────────────────────
@@ -176,10 +193,10 @@ export function setupAutoSave(): void {
 export async function initSettings(): Promise<void> {
     try {
         const s = await getSettings();
-        volume.value = s.volume
-        color.value = s.color
-        if (s.theme === 'system') {
-            useSystemTheme().start()
+        volume.value = s.volume;
+        color.value = s.color;
+        if (s.theme === "system") {
+            useSystemTheme().start();
         }
         for (const [_, v] of settingItems) {
             for (const item of v) {
@@ -201,8 +218,8 @@ export async function initSettings(): Promise<void> {
 
 /** 修改单个设置项（调用 Rust 持久化 + 同步本地 ref） */
 export async function updateSetting<K extends keyof AppSettings>(
-  key: K,
-  value: AppSettings[K]
+    key: K,
+    value: AppSettings[K],
 ): Promise<void> {
     try {
         const updated = await setSetting(key, value);
@@ -215,7 +232,7 @@ export async function updateSetting<K extends keyof AppSettings>(
                 } else if (item.sliderValue !== undefined) {
                     item.sliderValue.value = val as string | number;
                 }
-                break
+                break;
             }
         }
     } catch (err) {
@@ -235,4 +252,4 @@ export default {
     autoLinkWss,
     color,
     logLevel,
-}
+};

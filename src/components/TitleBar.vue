@@ -2,79 +2,91 @@
     <div class="titlebar" data-tauri-drag-region>
         <div class="nav" ref="navRef" v-show="!Immersive.isImmersive.value">
             <div
-              class="nav-item"
-              :class="{ 'nav-item--active': isActive(item.to) }"
-              v-for="item in props.navItems"
-              :key="item.to"
-              @click="navigateTo(item.to)"
+                class="nav-item"
+                :class="{ 'nav-item--active': isActive(item.to) }"
+                v-for="item in props.navItems"
+                :key="item.to"
+                @click="navigateTo(item.to)"
             >
-              <div class="icon"><SvgIcon :svg-raw="item.svg" /></div>
-              <div class="nav-text">{{ item.text }}</div>
+                <div class="icon"><SvgIcon :svg-raw="item.svg" /></div>
+                <div class="nav-text">{{ item.text }}</div>
             </div>
         </div>
         <div class="summary" v-show="Immersive.isImmersive.value">
-            <div class="summary-track"><span>{{ Immersive.summary.value }}</span><span>{{ Immersive.summary.value }}</span></div>
+            <div class="summary-track">
+                <span>{{ Immersive.summary.value }}</span
+                ><span>{{ Immersive.summary.value }}</span>
+            </div>
         </div>
         <div class="buttons">
-            <div class="btn icon" id="pin" @click="togglePin"><SvgIcon :svg-raw="isPin?svg.pinFillSvg:svg.pinSvg" /></div>
-            <div class="btn icon" id="minimize" @click="appWindow.minimize"><SvgIcon :svg-raw="svg.minimizeSvg" /></div>
-            <div class="btn icon" id="close" @click="appWindow.close"><SvgIcon :svg-raw="svg.closeSvg" /></div>
+            <div class="btn icon" id="pin" @click="togglePin">
+                <SvgIcon :svg-raw="isPin ? svg.pinFillSvg : svg.pinSvg" />
+            </div>
+            <div class="btn icon" id="minimize" @click="appWindow.minimize">
+                <SvgIcon :svg-raw="svg.minimizeSvg" />
+            </div>
+            <div class="btn icon" id="close" @click="appWindow.close">
+                <SvgIcon :svg-raw="svg.closeSvg" />
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { Window } from '@tauri-apps/api/window'
-import { useRouter, useRoute } from 'vue-router'
-import { svg } from '../detail/Assets'
-import SvgIcon from './SvgIcon.vue'
-import { ref } from 'vue'
-import Immersive from '../detail/Immersive.ts'
-import { radius } from '../detail/Theme.ts'
+import { Window } from "@tauri-apps/api/window";
+import { useRouter, useRoute } from "vue-router";
+import { svg } from "../detail/Assets";
+import SvgIcon from "./SvgIcon.vue";
+import { ref } from "vue";
+import Immersive from "../detail/Immersive.ts";
+import { radius } from "../detail/Theme.ts";
 
-const appWindow = new Window('main')
-const router = useRouter()
-const route = useRoute()
-const isPin = ref(false)
+const appWindow = new Window("main");
+const router = useRouter();
+const route = useRoute();
+const isPin = ref(false);
 
-const props = withDefaults(defineProps<{
-    height?: string,
-    bgColor?: string,
-    activeColor?: string,
-    iconColor?: string,
-    activeIconColor?: string,
-    navItems?: {
-        svg: string,
-        text: string,
-        to: string,
-    }[]
-}>(), {
-    height: '2em',
-    bgColor: 'transparent',
-    activeColor: 'white',
-    iconColor: 'white',
-    activeIconColor: 'pink',
-    navItems: () => [],
-})
+const props = withDefaults(
+    defineProps<{
+        height?: string;
+        bgColor?: string;
+        activeColor?: string;
+        iconColor?: string;
+        activeIconColor?: string;
+        navItems?: {
+            svg: string;
+            text: string;
+            to: string;
+        }[];
+    }>(),
+    {
+        height: "2em",
+        bgColor: "transparent",
+        activeColor: "white",
+        iconColor: "white",
+        activeIconColor: "pink",
+        navItems: () => [],
+    },
+);
 
 async function togglePin() {
     if (isPin.value) {
-        await appWindow.setAlwaysOnTop(false)
-        isPin.value = false
+        await appWindow.setAlwaysOnTop(false);
+        isPin.value = false;
     } else {
-        await appWindow.setAlwaysOnTop(true)
-        isPin.value = true
+        await appWindow.setAlwaysOnTop(true);
+        isPin.value = true;
     }
 }
 
 function navigateTo(path: string) {
     if (path && router.currentRoute.value.path !== path) {
-        router.push(path)
+        router.push(path);
     }
 }
 
 function isActive(path: string): boolean {
-    return route.path === path
+    return route.path === path;
 }
 </script>
 
@@ -84,8 +96,20 @@ function isActive(path: string): boolean {
     overflow: hidden;
     flex: 1;
     min-width: 0;
-    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        black 10%,
+        black 90%,
+        transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        black 10%,
+        black 90%,
+        transparent 100%
+    );
     user-select: none;
     -webkit-user-select: none;
     pointer-events: none;
@@ -101,8 +125,12 @@ function isActive(path: string): boolean {
     padding-right: 2em;
 }
 @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
 }
 
 .titlebar {
@@ -144,8 +172,8 @@ function isActive(path: string): boolean {
     transition: transform 0.2s ease;
     box-sizing: border-box;
 }
-.nav-item:hover .icon :deep(svg){
-    transform: scale(1.2);  /* 1.7 / 1.5 */
+.nav-item:hover .icon :deep(svg) {
+    transform: scale(1.2); /* 1.7 / 1.5 */
 }
 
 .nav-item--active .icon {
@@ -185,7 +213,7 @@ function isActive(path: string): boolean {
     font-size: 0.875em;
     color: v-bind("props.iconColor");
 }
-#pin :deep(svg){
+#pin :deep(svg) {
     transform: scale(1.25);
 }
 </style>

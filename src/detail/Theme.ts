@@ -1,34 +1,34 @@
 import { computed, ref } from "vue";
-import settings  from "./Setting";
+import settings from "./Setting";
 import { isTransparentBack } from "./WindowControl";
 
-let mediaQuery: MediaQueryList | null = null
-const isDark = ref(false)
+let mediaQuery: MediaQueryList | null = null;
+const isDark = ref(false);
 
 const update = (e: MediaQueryListEvent) => {
-    isDark.value = e.matches
-}
+    isDark.value = e.matches;
+};
 
 const start = () => {
-    if (!window.matchMedia) return
-    mediaQuery = window.matchMedia('(prefers-color-scheme: dark)') 
-    isDark.value = mediaQuery.matches
-    mediaQuery.addEventListener('change', update)
-} 
+    if (!window.matchMedia) return;
+    mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    isDark.value = mediaQuery.matches;
+    mediaQuery.addEventListener("change", update);
+};
 
 const stop = () => {
     if (mediaQuery) {
-        mediaQuery.removeEventListener('change', update)
+        mediaQuery.removeEventListener("change", update);
     }
-}
+};
 
 export function useSystemTheme() {
     return {
         isDark,
         start,
         stop,
-    }
-} 
+    };
+}
 
 export interface ThemeColors {
     label: string;
@@ -66,7 +66,7 @@ export const THEMES: Record<string, ThemeColors> = {
         light: "#b1a9f0",
         medium: "#6252e1",
         dark: "#2e1eaf",
-        darkest: "#120c42"
+        darkest: "#120c42",
     },
     green: {
         label: "green",
@@ -106,44 +106,46 @@ export const currentTheme = computed<ThemeColors>(() => {
     return THEMES[settings.color.value] ?? DEFAULT_THEME;
 });
 
-export const glassmorphismBackground = ref(settings.glassmorphismBackground.value)
+export const glassmorphismBackground = ref(
+    settings.glassmorphismBackground.value,
+);
 // ── 便捷 computed ───────────────────────────────────────
 export const darkTheme = computed(() => {
-    if (settings.theme.value === 'dark') return true 
-    if (settings.theme.value === 'system') return isDark.value 
-    return false
-})
+    if (settings.theme.value === "dark") return true;
+    if (settings.theme.value === "system") return isDark.value;
+    return false;
+});
 export const lightColor = computed(() => currentTheme.value.light);
 export const lightestColor = computed(() => currentTheme.value.lightest);
 export const mediumColor = computed(() => currentTheme.value.medium);
-export const darkColor = computed(() => currentTheme.value.dark)
-export const darkestColor = computed(() => currentTheme.value.darkest)
+export const darkColor = computed(() => currentTheme.value.dark);
+export const darkestColor = computed(() => currentTheme.value.darkest);
 export const hlColor = computed(() => {
-    if (darkTheme.value) return 'white'
-    else return 'black'
-})
+    if (darkTheme.value) return "white";
+    else return "black";
+});
 export const bgLightColor = computed(() => {
-    if (settings.glassmorphismBackground.value || isTransparentBack.value) return 'transparent'
-    if (darkTheme.value) return '#252525'
-    else return lightestColor.value
-})
+    if (settings.glassmorphismBackground.value || isTransparentBack.value)
+        return "transparent";
+    if (darkTheme.value) return "#252525";
+    else return lightestColor.value;
+});
 export const bgDarkColor = computed(() => {
-    if (settings.glassmorphismBackground.value || isTransparentBack.value) return 'transparent'
-    if (darkTheme.value) return 'black'
-    else return darkestColor.value
-
-})
+    if (settings.glassmorphismBackground.value || isTransparentBack.value)
+        return "transparent";
+    if (darkTheme.value) return "black";
+    else return darkestColor.value;
+});
 export const accentColor = computed(() => {
-    return lightColor.value
-})
-
+    return lightColor.value;
+});
 
 export const docBgColor = computed(() => {
     if (isTransparentBack.value || settings.glassmorphismBackground.value) {
-        return 'transparent'
+        return "transparent";
     } else {
-        return bgLightColor.value
+        return bgLightColor.value;
     }
-})
+});
 
-export const radius = ref<string>('8px')
+export const radius = ref<string>("8px");

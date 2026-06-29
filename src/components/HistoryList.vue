@@ -1,9 +1,22 @@
 <template>
-    <div class="history-container" :style="colors" :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }">
-        <div class="h-item" v-for="item in items" @click="emit('enterRoom', item.room_id)">
+    <div
+        class="history-container"
+        :style="colors"
+        :class="{ 'windows-scrollbar-hidden': isWindowsPlatform }"
+    >
+        <div
+            class="h-item"
+            v-for="item in items"
+            @click="emit('enterRoom', item.room_id)"
+        >
             <div class="cover">
                 <BiliImg :src="item.cover" :use-disk="true" />
-                <div class="status" :class="{'is-live': item.live_status === 1}">{{ item.live_status === 1 ? '直播中' : '未开播' }}</div>
+                <div
+                    class="status"
+                    :class="{ 'is-live': item.live_status === 1 }"
+                >
+                    {{ item.live_status === 1 ? "直播中" : "未开播" }}
+                </div>
             </div>
             <div class="info">
                 <div class="title">{{ item.title }}</div>
@@ -15,34 +28,36 @@
 </template>
 
 <script setup lang="ts">
-import type { HistoryItem } from '../detail/HistoryList';
-import BiliImg from './BiliImg.vue';
-import { formatTime } from '../utility/format_time.ts';
-import { computed } from 'vue';
-import { platform } from '../detail/WindowControl';
-const props = withDefaults(defineProps<{
-    items: HistoryItem[]
-    accentColor?: string,
-    hlColor?: string,
-    bgColor?: string,
-}>(), {
-    accentColor: 'pink',
-    hlColor: 'white',
-    bgColor: 'transparent',
-})
+import type { HistoryItem } from "../detail/HistoryList";
+import BiliImg from "./BiliImg.vue";
+import { formatTime } from "../utility/format_time.ts";
+import { computed } from "vue";
+import { platform } from "../detail/WindowControl";
+const props = withDefaults(
+    defineProps<{
+        items: HistoryItem[];
+        accentColor?: string;
+        hlColor?: string;
+        bgColor?: string;
+    }>(),
+    {
+        accentColor: "pink",
+        hlColor: "white",
+        bgColor: "transparent",
+    },
+);
 
-const isWindowsPlatform = computed(() => platform.value === 'windows')
+const isWindowsPlatform = computed(() => platform.value === "windows");
 
 const colors = computed(() => ({
-    '--hl-color': `${props.hlColor}`,
-    '--accent-color': `${props.accentColor}`,
-    '--bg-color': `${props.bgColor}`,
-}))
+    "--hl-color": `${props.hlColor}`,
+    "--accent-color": `${props.accentColor}`,
+    "--bg-color": `${props.bgColor}`,
+}));
 
 const emit = defineEmits<{
-    (e: 'enterRoom', id: number): void
-}>()
-
+    (e: "enterRoom", id: number): void;
+}>();
 </script>
 
 <style scoped>
@@ -64,7 +79,8 @@ const emit = defineEmits<{
 .time {
     margin-top: auto;
 }
-.time,.up {
+.time,
+.up {
     color: grey;
     font-size: 0.8em;
 }

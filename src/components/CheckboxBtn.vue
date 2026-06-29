@@ -1,9 +1,9 @@
 <template>
     <div class="checkbox-container" :style="cssVars">
-        <div 
-            class="item" 
-            v-for="item in data" 
-            :class="{'is-selected': item.value === modelValue}"
+        <div
+            class="item"
+            v-for="item in data"
+            :class="{ 'is-selected': item.value === modelValue }"
             @click="modelValue = item.value"
         >
             {{ item.label }}
@@ -12,25 +12,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from "vue";
 
-const modelValue = defineModel<string | number>()
-const props = withDefaults(defineProps<{
-    data?: {
-        label: string,
-        value: string | number,
-    }[],
-    bgColor?: string,
-    accentColor?: string,
-}>(), {
-    data: () => [],
-    accentColor: 'pink',
-    bgColor: 'white',
-})
+const modelValue = defineModel<string | number>();
+const props = withDefaults(
+    defineProps<{
+        data?: {
+            label: string;
+            value: string | number;
+        }[];
+        bgColor?: string;
+        accentColor?: string;
+    }>(),
+    {
+        data: () => [],
+        accentColor: "pink",
+        bgColor: "white",
+    },
+);
 const cssVars = computed(() => ({
-    '--bg-color': props.bgColor,
-    '--accent-color': props.accentColor,
-}))
+    "--bg-color": props.bgColor,
+    "--accent-color": props.accentColor,
+}));
 </script>
 
 <style scoped>
@@ -50,6 +53,7 @@ const cssVars = computed(() => ({
     color: black;
     background-color: var(--bg-color);
     font: 0.8em bold;
+    cursor: pointer;
 }
 .item:first-child {
     border-radius: 99px 0 0 99px;
@@ -61,5 +65,4 @@ const cssVars = computed(() => ({
     color: white;
     background-color: var(--accent-color);
 }
-
 </style>

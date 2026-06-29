@@ -5,7 +5,10 @@
   "permissions": [
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://*.bilibili.com" }]
+      "allow": [
+        { "url": "https://*.bilibili.com" },
+        { "url": "https://github.com/Cerne1Lin/bilidanlive" }
+      ]
     }
   ]
 }

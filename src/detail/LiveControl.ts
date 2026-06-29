@@ -93,9 +93,8 @@ export function useLiveControl() {
                 ).catch(() => ({ logged_in: false }));
                 if (loginStatus.logged_in) {
                     invoke("record_room_entry", { roomId }).catch(() => {});
-                } else {
-                    addLocalHistory(infoRes.data);
                 }
+                addLocalHistory(infoRes.data);
             }
             isConnected.value = true;
             currentRoomId.value = roomId;
@@ -133,6 +132,7 @@ export function useLiveControl() {
         await LiveWs.disconnectLiveRoom();
         isConnected.value = false;
         currentRoomId.value = 0;
+        roomInfo.value = null
     }
 
     /** 刷新：重拉房间信息 + 重连 WSS/音频，不清弹幕 */

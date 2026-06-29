@@ -92,23 +92,25 @@ function addLocalHistory(room: RoomInfo) {
 }
 
 async function refreshLocalHistory() {
-    const uidList: number[] = []
-    for (const i of localHistory.value) {
-        if (i.uid !== 0) uidList.push(i.uid)
+    const uidList = localHistory.value
+        .map((item) => Number(item.uid))
+        .filter((uid): uid is number => Number.isInteger(uid) && uid > 0);
+
+    if (uidList.length === 0) {
+        return;
     }
-    if (uidList.length > 0) {
-        const roomsInfo = await invoke<RoomInfo[]>('get_rooms_info',{ uids: uidList })
-        for (const i of roomsInfo) {
-            const r = localHistory.value.find((val) => val.uid === i.uid)
-            if (r) {
-                r.author_face = i.user_info?.face??""
-                r.author_name = i.user_info?.uname??""
-                r.cover = i.user_cover
-                r.room_id = i.room_id
-                r.tag_name = i.area_name
-                r.title = i.title
-                r.live_status = i.live_status
-            }
+
+    const roomsInfo = await invoke<RoomInfo[]>('get_rooms_info', { uids: uidList });
+    for (const i of roomsInfo) {
+        const r = localHistory.value.find((val) => val.uid === i.uid);
+        if (r) {
+            r.author_face = i.user_info?.face ?? "";
+            r.author_name = i.user_info?.uname ?? "";
+            r.cover = i.user_cover;
+            r.room_id = i.room_id;
+            r.tag_name = i.area_name;
+            r.title = i.title;
+            r.live_status = i.live_status;
         }
     }
 }

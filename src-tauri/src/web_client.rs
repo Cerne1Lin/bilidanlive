@@ -893,13 +893,19 @@ pub async fn record_room_entry(
 
 #[tauri::command]
 pub async fn get_rooms_info(uids: Vec<u64>) -> Result<Vec<RoomInfo>, String> {
-    let mut map = HashMap::new();
-    map.insert("uids", uids);
+    if uids.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    let mut url =
+        String::from("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids");
+    for (i, uid) in uids.iter().enumerate() {
+        url.push(if i == 0 { '?' } else { '&' });
+        url.push_str(&format!("uids[]={}", uid));
+    }
 
     let res = reqwest::Client::new()
-        .post("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids")
-        .header("Content-Type", "application/json")
-        .json(&map)
+        .get(&url)
         .send()
         .await
         .map_err(|e| format!("批量获取直播间信息发送失败 {}", e))?

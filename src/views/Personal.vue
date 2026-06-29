@@ -25,6 +25,7 @@ import { ref } from "vue";
 import { useHistoryList, type HistoryItem } from "../detail/HistoryList.ts";
 import { computed } from "vue";
 import { hlColor, bgLightColor, accentColor } from "../detail/Theme.ts";
+import { error } from "@tauri-apps/plugin-log";
 
 // ── 个人数据 ────────────────────────────────────────
 
@@ -68,7 +69,8 @@ async function load() {
             await refreshLocalHistory();       
         }
     } catch (err) {
-        addTip(String(err), "error", 3);
+        error(`[personal_page] load error ${err}`)
+        addTip(String(err), "error", -1);
     } finally {
         isLoading.value.fLoading = false;
         isLoading.value.uLoading = false;
@@ -81,6 +83,7 @@ function clearAll() {
         clearFollowingLive();
         clearSign();
     } catch (err) {
+        error(`[personal_page] clear all error ${err}`)
         addTip(String(err), "error", 3);
     }
 }
@@ -93,10 +96,12 @@ async function flush() {
             isLoading.value.hLoading = true;
             await loadHistoryList();
         } else {
+            isLoading.value.hLoading = true
             await refreshLocalHistory()
         }
     } catch (err) {
-        addTip(String(err), "error", 3);
+        error(`[personal_page] flush error ${err}`)
+        addTip(String(err), "error", -1);
     } finally {
         isLoading.value.fLoading = false;
         isLoading.value.hLoading = false;

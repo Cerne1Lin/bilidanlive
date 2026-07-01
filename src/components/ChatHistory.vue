@@ -66,6 +66,7 @@ import { svg } from "../detail/Assets";
 import SvgIcon from "./SvgIcon.vue";
 import settings from "../detail/Setting.ts";
 import { radius } from "../detail/Theme.ts";
+import { isTransparentBack } from "../detail/WindowControl.ts";
 
 const props = withDefaults(
     defineProps<{
@@ -92,6 +93,7 @@ const cssVars = computed(() => ({
     "--accent-color": `${props.accentColor}`,
     "--bg-color": `${props.bgColor}`,
     "--radius": radius.value,
+    borderColor: isTransparentBack.value?'transparent':''
 }));
 // ── 滚动控制 ──────────────────────────────────────
 

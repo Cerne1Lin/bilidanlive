@@ -166,6 +166,7 @@ function getFontWeight(l: number | null): string {
     padding: 0.25em;
     overflow: hidden;
     width: auto;
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.8);
 }
 
 .name-box {

@@ -186,5 +186,6 @@ function getColor(item: ScItem) {
     min-width: 6em;
     box-sizing: border-box;
     flex-shrink: 0;
+    backdrop-filter: blur(1px);
 }
 </style>

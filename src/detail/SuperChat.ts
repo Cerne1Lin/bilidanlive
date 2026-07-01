@@ -27,6 +27,7 @@ const scList = ref<ScItem[]>([]);
 
 function addSc(sc: ScItem) {
     const id = sc.id;
+    if (sc.time < 30000) sc.time = 30000 
     const time = sc.time;
     const idx = scList.value.findIndex((item) => item.price <= sc.price);
     scList.value.splice(idx === -1 ? scList.value.length : idx, 0, sc);
